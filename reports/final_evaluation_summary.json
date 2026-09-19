@@ -1,0 +1,19 @@
+{
+  "patch_level": {
+    "level": "patch",
+    "tp": 58,
+    "fp": 4,
+    "tn": 326,
+    "fn": 0,
+    "precision": 0.935,
+    "recall": 1.0,
+    "specificity": 0.988,
+    "accuracy": 0.99,
+    "f1_score": 0.967
+  },
+  "whole_scan_level": {
+    "level": "whole_scan",
+    "sensitivity": 0.293,
+    "fp_per_scan": 107.55
+  }
+}
