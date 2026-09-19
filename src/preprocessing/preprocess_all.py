@@ -9,7 +9,24 @@ import SimpleITK as sitk
 from config import RAW_DATA_DIR, PROCESSED_DATA_DIR, SWI_PATTERN, MASK_PATTERN, TARGET_SPACING, INTENSITY_CLIP_PERCENTILES
 
 
+def fix_uneven_brightness(image):
+    """Bias correction: flattens out the scanner's uneven 'glow'. 
+    Uses a shrunk copy to estimate the correction (much faster), 
+    then applies it to the full-resolution image."""
+    image = sitk.Cast(image, sitk.sitkFloat32)
+    brain_mask = sitk.OtsuThreshold(image, 0, 1, 200)
 
+    shrink_factor = 4
+    small_image = sitk.Shrink(image, [shrink_factor] * image.GetDimension())
+    small_mask = sitk.Shrink(brain_mask, [shrink_factor] * image.GetDimension())
+
+    corrector = sitk.N4BiasFieldCorrectionImageFilter()
+    corrector.SetMaximumNumberOfIterations([20] * 3)  # fewer iterations = faster, still good quality
+    corrector.Execute(small_image, small_mask)  # just to estimate the bias field
+
+    log_bias_field = corrector.GetLogBiasFieldAsImage(image)  # apply estimate to full-res image
+    corrected = image / sitk.Exp(log_bias_field)
+    return sitk.Cast(corrected, sitk.sitkFloat32)
 
 
 def resize_to_standard_spacing(image, is_mask=False):
