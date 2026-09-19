@@ -50,28 +50,33 @@ def elongation_score(patch, threshold_percentile=85):
 def main():
     metadata = pd.read_csv(PATCHES_DIR / "mimic_classifier_metadata.csv")
 
-    labels_3class = []
+    # First pass: compute elongation for every mimic patch, WITHOUT labeling yet
     elongations = []
-
     for _, row in metadata.iterrows():
         patch = np.load(PATCHES_DIR / row["subject"] / row["file"])
-
         if row["mimic_label"] == 1:
-            label_3class = 0  # true CMB
-            elong = None
+            elongations.append(None)  # true CMB, not a mimic, skip
         else:
-            elong = elongation_score(patch)
-            # Threshold chosen by inspecting the elongation distribution —
-            # document this choice in your report as an empirical threshold
-            label_3class = 1 if elong > 1.8 else 2  # 1 = vessel-like, 2 = other mimic/normal
+            elongations.append(elongation_score(patch))
 
-        labels_3class.append(label_3class)
-        elongations.append(elong)
-
-    metadata["label_3class"] = labels_3class
     metadata["elongation_score"] = elongations
 
-    print("=== 3-class label distribution ===")
+    # Compute the threshold from the ACTUAL data: median elongation among mimics only
+    mimic_elongations = metadata.loc[metadata["mimic_label"] == 0, "elongation_score"]
+    threshold = mimic_elongations.median()
+    print(f"Empirical elongation threshold (median of mimics): {threshold:.3f}")
+
+    # Second pass: assign final 3-class labels using this data-driven threshold
+    labels_3class = []
+    for _, row in metadata.iterrows():
+        if row["mimic_label"] == 1:
+            labels_3class.append(0)  # true CMB
+        else:
+            labels_3class.append(1 if row["elongation_score"] > threshold else 2)
+
+    metadata["label_3class"] = labels_3class
+
+    print("\n=== 3-class label distribution ===")
     class_names = {0: "True CMB", 1: "Vessel-like mimic", 2: "Other mimic/normal"}
     print(metadata["label_3class"].map(class_names).value_counts())
 
