@@ -9,12 +9,7 @@ import SimpleITK as sitk
 from config import RAW_DATA_DIR, PROCESSED_DATA_DIR, SWI_PATTERN, MASK_PATTERN, TARGET_SPACING, INTENSITY_CLIP_PERCENTILES
 
 
-def fix_uneven_brightness(image):
-    """Bias correction: flattens out the scanner's uneven 'glow'."""
-    image = sitk.Cast(image, sitk.sitkFloat32)
-    brain_mask = sitk.OtsuThreshold(image, 0, 1, 200)  # roughly separates brain from background
-    corrector = sitk.N4BiasFieldCorrectionImageFilter()
-    return corrector.Execute(image, brain_mask)
+
 
 
 def resize_to_standard_spacing(image, is_mask=False):
@@ -49,15 +44,22 @@ def process_one_subject(subject_name):
     mask_path = subject_folder / MASK_PATTERN.format(subj=subject_name)
 
     swi_image = sitk.ReadImage(str(swi_path))
-    mask_image = sitk.ReadImage(str(mask_path))
-
     swi_image = fix_uneven_brightness(swi_image)
     swi_image = resize_to_standard_spacing(swi_image, is_mask=False)
-    mask_image = resize_to_standard_spacing(mask_image, is_mask=True)
+
+    if mask_path.exists():
+        mask_image = sitk.ReadImage(str(mask_path))
+        mask_image = resize_to_standard_spacing(mask_image, is_mask=True)
+        mask_array = sitk.GetArrayFromImage(mask_image)
+    else:
+        # CHANGED: no mask file = this patient has zero microbleeds.
+        # Build an all-zero mask with the same shape as the (already resized) scan.
+        print(f"    ⚠️  No CMB mask for {subject_name} — treating as zero-microbleed subject")
+        swi_array_shape = sitk.GetArrayFromImage(swi_image).shape
+        mask_array = np.zeros(swi_array_shape, dtype=np.uint8)
 
     swi_array = sitk.GetArrayFromImage(swi_image)
     swi_array = normalize_brightness(swi_array)
-    mask_array = sitk.GetArrayFromImage(mask_image)
 
     out_folder = PROCESSED_DATA_DIR / subject_name
     out_folder.mkdir(parents=True, exist_ok=True)
