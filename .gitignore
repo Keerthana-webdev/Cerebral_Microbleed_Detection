@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+
+data/raw/
+data/preprocessed/
+data/patches/
+
+models/*.pth
+models/*.pt
+
+outputs/

@@ -1,0 +1,14 @@
+torch
+torchvision
+monai
+nibabel
+SimpleITK
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+opencv-python
+streamlit
+reportlab
+grad-cam
