@@ -82,7 +82,7 @@ if uploaded_file is not None:
         vmin, vmax = np.percentile(slice_data, (1, 99))
 
         # SMALL, fixed-size figure (this fixes the oversized image issue)
-        fig, ax = plt.subplots(figsize=(4.5, 4.5), dpi=100)
+        fig, ax = plt.subplots(figsize=(4.5 , 4.5), dpi=100)
         ax.imshow(slice_data, cmap="gray", origin="lower", vmin=vmin, vmax=vmax)
 
         for d in detections:
