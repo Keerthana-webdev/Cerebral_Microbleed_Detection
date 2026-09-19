@@ -25,10 +25,10 @@ REPORTS_DIR.mkdir(exist_ok=True)
 
 PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)             # how far the window moves each step (half the patch size = 50% overlap)
-STAGE1_THRESHOLD = 0.85     # was 0.5 — require much higher confidence to pass Stage 1
-STAGE2_THRESHOLD = 0.85     # was 0.5 — same for Stage 2
-NMS_MIN_DISTANCE = 15       # was 8 — merge detections within a wider radius
-MATCH_DISTANCE = 6              # voxels — how close a prediction must be to count as a true match
+STAGE1_THRESHOLD = 0.85        # was 0.5 — require much higher confidence to pass Stage 1
+STAGE2_THRESHOLD = 0.85        # was 0.5 — same for Stage 2
+NMS_MIN_DISTANCE = 15          # was 8 — merge detections within a wider radius
+MATCH_DISTANCE = 6             # voxels — how close a prediction must be to count as a true match
 
 stage1_model = SimpleCNN3D().to(DEVICE)
 stage1_model.load_state_dict(torch.load(MODELS_DIR / "candidate_detector_best.pt", map_location=DEVICE))
