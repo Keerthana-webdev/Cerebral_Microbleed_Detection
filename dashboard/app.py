@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
@@ -19,9 +20,11 @@ st.set_page_config(page_title="CMB Detection Dashboard", layout="wide")
 st.title("🧠 Cerebral Microbleed Detection Dashboard")
 st.caption("Upload an SWI brain MRI scan (.nii.gz) to detect and localize cerebral microbleeds.")
 
+
 @st.cache_resource
 def load_pipeline():
     return CMBDetectionPipeline()
+
 
 pipeline = load_pipeline()
 
@@ -54,28 +57,50 @@ if uploaded_file is not None:
 
     st.subheader("Detected Lesions")
     if detections:
-        import pandas as pd
         df = pd.DataFrame([{
-            "X": d["center"][0], "Y": d["center"][1], "Z (slice)": d["center"][2],
+            "Axis0": d["center"][0], "Axis1": d["center"][1], "Axis2 (slice)": d["center"][2],
             "Confidence": d["confidence"], "Status": d["confidence_label"],
         } for d in detections])
         st.dataframe(df, use_container_width=True)
 
         st.subheader("Visualization")
-        slice_options = sorted(set(d["center"][2] for d in detections))
-        selected_slice = st.selectbox("View slice", slice_options)
 
-        fig, ax = plt.subplots(figsize=(6, 6))
-        ax.imshow(volume[:, :, selected_slice].T, cmap="gray", origin="lower")
+        # Slice options sorted by NUMBER OF DETECTIONS on that slice (most first),
+        # so the default view always shows something meaningful, not a blank slice.
+        slice_counts = df["Axis2 (slice)"].value_counts().sort_values(ascending=False)
+        slice_options = slice_counts.index.tolist()
+
+        selected_slice = st.selectbox(
+            "View slice (sorted by number of detections)",
+            slice_options,
+            format_func=lambda s: f"Slice {s}  ({slice_counts[s]} detection(s))",
+        )
+
+        # Robust contrast: scale display using percentiles instead of raw min/max,
+        # so a mostly-background slice still shows visible brain tissue detail.
+        slice_data = volume[:, :, selected_slice].T
+        vmin, vmax = np.percentile(slice_data, (1, 99))
+
+        # SMALL, fixed-size figure (this fixes the oversized image issue)
+        fig, ax = plt.subplots(figsize=(4.5, 4.5), dpi=100)
+        ax.imshow(slice_data, cmap="gray", origin="lower", vmin=vmin, vmax=vmax)
+
         for d in detections:
             if d["center"][2] == selected_slice:
                 x, y, _ = d["center"]
                 color = "red" if d["confidence_label"] == "REVIEW RECOMMENDED" else "yellow"
-                circle = plt.Circle((x, y), 4, color=color, fill=False, linewidth=2)
+                circle = plt.Circle((x, y), 4, color=color, fill=False, linewidth=1.5)
                 ax.add_patch(circle)
-        ax.set_title(f"Slice {selected_slice}")
+
+        ax.set_title(f"Slice {selected_slice}", fontsize=10)
         ax.axis("off")
-        st.pyplot(fig)
+        fig.tight_layout()
+
+        # Center the small image in the middle column instead of stretching full width
+        img_col1, img_col2, img_col3 = st.columns([1, 2, 1])
+        with img_col2:
+            st.pyplot(fig, use_container_width=False)
+
     else:
         st.info("No microbleeds detected in this scan.")
 
