@@ -74,9 +74,9 @@ for subject_name in test_subjects:
     }
 
 # Try a grid of threshold combinations
-stage1_thresholds = [0.5, 0.6, 0.7]
-stage2_thresholds = [0.5, 0.6, 0.7, 0.8]
-nms_distances = [10, 15, 20]
+stage1_thresholds = [0.5, 0.7, 0.9]
+stage2_thresholds = [0.7, 0.85, 0.95, 0.99]
+nms_distances = [15, 20, 25, 30]
 MATCH_DISTANCE = 6
 
 results = []
