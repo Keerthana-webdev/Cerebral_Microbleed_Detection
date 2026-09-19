@@ -64,7 +64,7 @@ def run_sliding_window(volume, batch_size=64):
     candidate_centers = []
     for center in all_centers:
         patch = cut_patch(volume, center, PATCH_SIZE)
-        if patch.std() > 0.05:   # a real brain tissue window has some texture
+        if patch.std() > 0.3 and patch.mean() > -1.5:   # stricter: real brain tissue, not edge noise
             candidate_centers.append(center)
 
     print(f"  Grid positions: {len(all_centers)} total, {len(candidate_centers)} after background skip")
