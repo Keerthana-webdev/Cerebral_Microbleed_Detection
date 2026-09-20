@@ -332,6 +332,7 @@ if uploaded_file is not None and run_clicked:
     st.session_state.selected_idx = 0
     st.session_state.show_all_candidates = False
     st.session_state.last_run = datetime.now()
+    st.session_state["slice_slider"] = candidates[0]["center"][2] if candidates else 0
 
 if export_clicked and st.session_state.candidates:
     out_path = PROJECT_ROOT / "reports" / "cmb_review_report.pdf"
@@ -427,6 +428,7 @@ with left:
 
         if st.button(f"Open {c['id']}", key=f"open_{c['id']}", use_container_width=True):
             st.session_state.selected_idx = i
+            st.session_state["slice_slider"] = c["center"][2]
             st.rerun()
 
     if n_total > DISPLAY_LIMIT:
@@ -450,22 +452,40 @@ with right:
     show_markers = st.toggle(f"Candidate markers  ·  *{n_total} detected*", value=True)
     show_crosshair = st.toggle("Crosshair guide  ·  *Coordinate aid*", value=False)
 
-    z = selected["center"][2]
+    max_slice = volume.shape[2] - 1
+    if "slice_slider" not in st.session_state:
+        st.session_state["slice_slider"] = selected["center"][2]
+    st.session_state["slice_slider"] = int(np.clip(st.session_state["slice_slider"], 0, max_slice))
+
+    slices_with_detections = sorted(set(c["center"][2] for c in candidates))
+    z = st.slider(
+        f"Slice  ({len(slices_with_detections)} slice(s) have detections)",
+        0, max_slice, key="slice_slider",
+    )
+    n_on_this_slice = sum(1 for c in candidates if c["center"][2] == z)
+    st.caption(f"📍 {n_on_this_slice} detection(s) on slice {z}" if n_on_this_slice
+               else f"No detections on slice {z} — try a slice from: {slices_with_detections[:8]}{'...' if len(slices_with_detections) > 8 else ''}")
+
     slice_data = volume[:, :, z].T
     vmin, vmax = np.percentile(slice_data, (1, 99))
 
     fig, ax = plt.subplots(figsize=(4.6, 4.6), dpi=100)
     ax.imshow(slice_data, cmap="gray", origin="lower", vmin=vmin, vmax=vmax)
 
-    if show_heatmap:
+    candidates_on_slice = [c for c in candidates if c["center"][2] == z]
+    # Heatmap target: the selected candidate if it's on this slice, else the
+    # first candidate found on this slice, so the overlay always matches something visible.
+    heatmap_target = selected if selected["center"][2] == z else (candidates_on_slice[0] if candidates_on_slice else None)
+
+    if show_heatmap and heatmap_target is not None:
         try:
-            patch = pipeline._cut_patch(volume, selected["center"], (16, 16, 8))
+            patch = pipeline._cut_patch(volume, heatmap_target["center"], (16, 16, 8))
             patch_tensor = torch.tensor(patch, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
             patch_tensor.requires_grad_(True)
             target_layer = pipeline.stage2_model.features[6]
             cam = GradCAM3D(pipeline.stage2_model, target_layer)
             heatmap = cam.generate(patch_tensor)
-            x, y, _ = selected["center"]
+            x, y, _ = heatmap_target["center"]
             half = (8, 8, 4)
             hx0, hx1 = x - half[0], x + half[0]
             hy0, hy1 = y - half[1], y + half[1]
@@ -476,13 +496,12 @@ with right:
             pass
 
     if show_markers:
-        for c in candidates:
-            if c["center"][2] == z:
-                cx, cy, _ = c["center"]
-                is_sel = c["id"] == selected["id"]
-                color = "#ea580c" if is_sel else "#facc15"
-                circle = plt.Circle((cx, cy), 4, color=color, fill=False, linewidth=2 if is_sel else 1.2)
-                ax.add_patch(circle)
+        for c in candidates_on_slice:
+            cx, cy, _ = c["center"]
+            is_sel = c["id"] == selected["id"]
+            color = "#ea580c" if is_sel else "#facc15"
+            circle = plt.Circle((cx, cy), 4, color=color, fill=False, linewidth=2 if is_sel else 1.2)
+            ax.add_patch(circle)
 
     if show_crosshair:
         x, y, _ = selected["center"]
@@ -504,7 +523,8 @@ with right:
     ec1.markdown(f"""<div class="stat-card"><div class="stat-label">CONFIDENCE</div>
     <div class="stat-value">{selected['confidence']*100:.0f}%</div></div>""", unsafe_allow_html=True)
     ec2.markdown(f"""<div class="stat-card"><div class="stat-label">SLICE</div>
-    <div class="stat-value">{z}</div></div>""", unsafe_allow_html=True)
+    <div class="stat-value">{z}</div><div class="stat-sub">Viewing slice {z} of {max_slice}</div></div>""",
+    unsafe_allow_html=True)
 
     st.write("")
     st.markdown("**CLASSIFICATION**")
