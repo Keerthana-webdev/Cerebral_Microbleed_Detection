@@ -58,11 +58,29 @@ st.markdown("""
 
     .stat-card {
         background: white; border-radius: 12px; padding: 16px 18px;
-        border: 1px solid #e5e7eb; height: 100%;
+        border: 1px solid #e5e7eb; height: 100%; position: relative;
     }
     .stat-label { font-size: 10px; letter-spacing: 1px; color: #94a3b8; font-weight:700; text-transform:uppercase;}
     .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; margin-top: 4px;}
     .stat-sub { font-size: 11px; color: #94a3b8; margin-top: 2px;}
+    .stat-icon { position:absolute; top:16px; right:16px; font-size:14px; color:#94a3b8; }
+
+    .breadcrumb-label {
+        color:#0d9488; font-weight:700; font-size:11px; letter-spacing:1.5px;
+        text-transform:uppercase; margin-bottom:14px;
+    }
+
+    .user-card {
+        display:flex; align-items:center; gap:10px; margin-top:24px;
+        padding:10px 12px; background:#1e293b; border-radius:10px;
+    }
+    .user-avatar {
+        width:34px; height:34px; border-radius:50%; background:#f97316;
+        display:flex; align-items:center; justify-content:center;
+        color:white; font-weight:700; font-size:12px; flex-shrink:0;
+    }
+    .user-name { font-size:13px; font-weight:700; color:#f1f5f9; line-height:1.3; }
+    .user-role { font-size:11px; color:#94a3b8; line-height:1.3; }
 
     .safety-banner {
         background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
@@ -248,10 +266,29 @@ with st.sidebar:
     page = st.radio("nav", ["Review workspace", "Methodology", "Literature map"],
                      label_visibility="collapsed")
 
+    st.markdown('<div class="nav-header" style="margin-top:20px;">UPLOAD SCAN</div>', unsafe_allow_html=True)
+    sidebar_upload = st.file_uploader("Upload SWI scan (.nii.gz)", type=["nii.gz", "gz"],
+                                       label_visibility="collapsed")
+    st.session_state["_sidebar_uploaded_file"] = sidebar_upload
+
     st.markdown("""
     <div class="safety-box">
         <div class="head">🛡️ SAFETY FIRST</div>
         Research interface only. Outputs require qualified clinical review.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---- Team member profile card (edit TEAM_MEMBER_NAME / TEAM_ROLE below) ----
+    TEAM_MEMBER_NAME = "Keerthana S"
+    TEAM_ROLE = "Capstone team"
+    initials = "".join(w[0] for w in TEAM_MEMBER_NAME.split()[:2]).upper()
+    st.markdown(f"""
+    <div class="user-card">
+        <div class="user-avatar">{initials}</div>
+        <div>
+            <div class="user-name">{TEAM_MEMBER_NAME}</div>
+            <div class="user-role">{TEAM_ROLE}</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -287,23 +324,26 @@ top_l, top_r = st.columns([5, 1])
 with top_l:
     st.caption("CMB / REVIEW")
 with top_r:
-    st.caption("🟢 Local demo mode")
+    st.caption("🟢 Local demo mode   ❓")
 
-st.markdown("### Review workspace")
-st.markdown("# Read the evidence,")
-st.markdown("## :teal[not just the output.]")
-st.write("A clinician-style review surface for cerebral microbleed candidates, "
-         "mimics, uncertainty, and model attention.")
+st.markdown('<div class="breadcrumb-label">● REVIEW WORKSPACE / DEMO</div>', unsafe_allow_html=True)
 
-col_upload, col_btn1, col_btn2 = st.columns([3, 1, 1])
-with col_upload:
-    uploaded_file = st.file_uploader("Upload SWI scan (.nii.gz)", type=["nii.gz", "gz"],
-                                      label_visibility="collapsed")
-with col_btn1:
+header_left, header_right = st.columns([3, 1.1])
+with header_left:
+    st.markdown("# Read the evidence,")
+    st.markdown("## :teal[not just the output.]")
+    st.write("A clinician-style review surface for cerebral microbleed candidates, "
+             "mimics, uncertainty, and model attention.")
+with header_right:
+    st.write("")
+    st.write("")
     run_clicked = st.button("🔄 Re-run analysis", use_container_width=True)
-with col_btn2:
-    export_clicked = st.button("⬇ Export report", use_container_width=True,
+    export_clicked = st.button("⬇ Export report", use_container_width=True, type="primary",
                                 disabled=(st.session_state.candidates is None))
+
+# File uploader lives in the sidebar (see below) — this reads whatever is
+# currently selected there, so the header row stays clean like the reference.
+uploaded_file = st.session_state.get("_sidebar_uploaded_file")
 
 if uploaded_file is not None and run_clicked:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".nii.gz") as tmp:
@@ -365,19 +405,19 @@ last_run_str = st.session_state.last_run.strftime("Today, %I:%M %p") if st.sessi
 # =========================================================
 s1, s2, s3, s4 = st.columns(4)
 with s1:
-    st.markdown(f"""<div class="stat-card"><div class="stat-label">CANDIDATES</div>
+    st.markdown(f"""<div class="stat-card"><div class="stat-icon">▦</div><div class="stat-label">CANDIDATES</div>
     <div class="stat-value">{n_total:02d}</div>
     <div class="stat-sub">{n_cmb} microbleed · {n_mimic} mimic</div></div>""", unsafe_allow_html=True)
 with s2:
-    st.markdown(f"""<div class="stat-card"><div class="stat-label">REVIEWED</div>
+    st.markdown(f"""<div class="stat-card"><div class="stat-icon">✓</div><div class="stat-label">REVIEWED</div>
     <div class="stat-value">{n_reviewed:02d}</div>
     <div class="stat-sub">{n_total - n_reviewed} still need attention</div></div>""", unsafe_allow_html=True)
 with s3:
-    st.markdown(f"""<div class="stat-card"><div class="stat-label">MEAN CONFIDENCE</div>
+    st.markdown(f"""<div class="stat-card"><div class="stat-icon">◔</div><div class="stat-label">MEAN CONFIDENCE</div>
     <div class="stat-value">{mean_conf:.1f}%</div>
     <div class="stat-sub">Candidate-level estimate</div></div>""", unsafe_allow_html=True)
 with s4:
-    st.markdown(f"""<div class="stat-card"><div class="stat-label">LAST RUN</div>
+    st.markdown(f"""<div class="stat-card"><div class="stat-icon">⏱</div><div class="stat-label">LAST RUN</div>
     <div class="stat-value" style="font-size:18px;">{last_run_str}</div>
     <div class="stat-sub">Demo inference only</div></div>""", unsafe_allow_html=True)
 
