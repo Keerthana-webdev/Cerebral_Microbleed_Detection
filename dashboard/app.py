@@ -815,38 +815,18 @@ if uploaded_file is not None:
 
 
         try:
-
-            # ------------------------------------------------
-            # PREPROCESSING
-            # ------------------------------------------------
-
             volume = pipeline.preprocess(
                 tmp_path
             )
-
-
-            # ------------------------------------------------
-            # DETECTION
-            # ------------------------------------------------
 
             detections = pipeline.detect(
                 volume,
                 progress_callback=update_progress
             )
 
-
-            # ------------------------------------------------
-            # SEVERITY
-            # ------------------------------------------------
-
             severity = pipeline.grade_severity(
                 len(detections)
             )
-
-
-            # ------------------------------------------------
-            # SAVE RESULTS
-            # ------------------------------------------------
 
             st.session_state.volume = volume
 
@@ -879,11 +859,6 @@ if uploaded_file is not None:
             st.exception(error)
 
             st.stop()
-
-
-# ============================================================
-# NO SCAN
-# ============================================================
 
 if st.session_state.results is None:
 
