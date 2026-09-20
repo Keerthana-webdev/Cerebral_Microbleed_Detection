@@ -1,9 +1,3 @@
-"""
-THE FINAL EVALUATION. Run once, on the untouched test set, using the
-final v2 model + final chosen thresholds. No further tuning after this.
-Reports every metric needed for the final report.
-"""
-
 import json
 import sys
 from pathlib import Path
@@ -16,6 +10,7 @@ from scipy import ndimage
 sys.path.append(str(Path(__file__).resolve().parents[1] / "preprocessing"))
 sys.path.append(str(Path(__file__).resolve().parents[1] / "candidate_detector"))
 from config import PROCESSED_DATA_DIR, PATCHES_DIR, SPLITS_DIR
+from model_v3 import DeeperCNN3D
 from model import SimpleCNN3D
 
 DEVICE = torch.device("cpu")
@@ -31,8 +26,8 @@ STAGE2_THRESHOLD = 0.7
 NMS_DISTANCE = 20
 MATCH_DISTANCE = 6
 
-stage1_model = SimpleCNN3D().to(DEVICE)
-stage1_model.load_state_dict(torch.load(MODELS_DIR / "candidate_detector_v2_best.pt", map_location=DEVICE))
+stage1_model = DeeperCNN3D().to(DEVICE)
+stage1_model.load_state_dict(torch.load(MODELS_DIR / "candidate_detector_v3_best.pt", map_location=DEVICE))
 stage1_model.eval()
 
 stage2_model = SimpleCNN3D().to(DEVICE)
