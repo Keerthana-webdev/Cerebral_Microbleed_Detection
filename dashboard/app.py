@@ -896,11 +896,6 @@ severity = st.session_state.results[
     "severity"
 ]
 
-
-# ============================================================
-# SUMMARY
-# ============================================================
-
 candidate_count = len(
     detections
 )
