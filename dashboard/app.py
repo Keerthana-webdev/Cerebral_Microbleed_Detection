@@ -1,30 +1,3 @@
-"""
-============================================================
-CMB REVIEW
-Cerebral Microbleed Detection Using Deep Learning
-Streamlit Research Dashboard
-============================================================
-
-Uses the existing project pipeline:
-
-SWI MRI
-   ↓
-Preprocessing
-   ↓
-Stage 1 CNN Candidate Detector
-   ↓
-NMS
-   ↓
-Stage 2 Mimic-Aware Classifier
-   ↓
-Confidence
-   ↓
-Severity
-   ↓
-Review Dashboard
-============================================================
-"""
-
 import sys
 import tempfile
 from pathlib import Path
