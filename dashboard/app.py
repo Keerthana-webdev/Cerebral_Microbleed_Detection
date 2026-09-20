@@ -1499,11 +1499,6 @@ with right:
             """
         )
 
-
-        # ====================================================
-        # REVIEW BUTTONS
-        # ====================================================
-
         review_col1, review_col2 = st.columns(2)
 
 
@@ -1537,11 +1532,6 @@ with right:
 
                 st.rerun()
 
-
-# ============================================================
-# PDF REPORT
-# ============================================================
-
 def create_pdf_report():
 
     from io import BytesIO
@@ -1559,16 +1549,10 @@ def create_pdf_report():
 
 
     styles = getSampleStyleSheet()
-
     title_style = styles["Title"]
-
     heading_style = styles["Heading2"]
-
     normal_style = styles["BodyText"]
-
-
     story = []
-
 
     story.append(
         Paragraph(
@@ -1576,7 +1560,6 @@ def create_pdf_report():
             title_style
         )
     )
-
 
     story.append(
         Spacer(
