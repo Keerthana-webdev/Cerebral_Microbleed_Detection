@@ -1,601 +1,1370 @@
-"""
-CMB Review — clinician-style review dashboard, wired to the real detection pipeline.
-"""
-
-import sys
-import tempfile
-from datetime import datetime
-from pathlib import Path
-
-import numpy as np
 import streamlit as st
-import matplotlib.pyplot as plt
-import torch
+import numpy as np
+import pandas as pd
+from pathlib import Path
+from datetime import datetime
+import base64
+import io
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.append(str(PROJECT_ROOT / "src" / "pipeline"))
-sys.path.append(str(PROJECT_ROOT / "src" / "severity_gradcam"))
-from final_pipeline import CMBDetectionPipeline
-from gradcam_3d import GradCAM3D
+# ============================================================
+# PAGE CONFIG
+# ============================================================
 
-# =========================================================
-# PAGE CONFIG + CSS
-# =========================================================
-st.set_page_config(page_title="CMB Review", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="CMB Review",
+    page_icon="🧠",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-st.markdown("""
+# ============================================================
+# CUSTOM CSS
+# ============================================================
+
+st.markdown(
+    """
 <style>
-    #MainMenu {visibility: hidden;}
-    header[data-testid="stHeader"] {visibility: hidden; height: 0;}
-    .stApp { background-color: #f7f7f5; }
 
-    section[data-testid="stSidebar"] { background-color: #0f172a; }
-    section[data-testid="stSidebar"] * { color: #cbd5e1 !important; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;500&display=swap');
 
-    .sidebar-logo { display:flex; align-items:center; gap:10px; padding: 4px 0 20px 0; }
-    .sidebar-logo .icon-circle {
-        background:#0d9488; border-radius:50%; width:36px; height:36px;
-        display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
-    }
-    .sidebar-logo .title { font-weight: 700; font-size: 17px; color:#f1f5f9; }
-    .sidebar-logo .subtitle { font-size: 10px; letter-spacing: 1.5px; color:#64748b; }
-
-    .demo-card {
-        background: #1e293b; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
-        border-left: 3px solid #f97316;
-    }
-    .demo-card .tag { font-size: 10px; letter-spacing: 1px; color: #fb923c; font-weight:700; }
-    .demo-card .name { font-size: 15px; font-weight: 700; color: #f1f5f9; margin-top: 6px; line-height:1.3;}
-    .demo-card .desc { font-size: 11px; color: #94a3b8; margin-top:4px; }
-
-    .nav-header { font-size:11px; letter-spacing:1.5px; color:#64748b; font-weight:700; margin: 4px 0 8px 2px;}
-
-    .safety-box {
-        background: #1e293b; border-radius: 10px; padding: 12px 14px; font-size: 11px;
-        color: #94a3b8; margin-top: 20px; line-height:1.5;
-    }
-    .safety-box .head { color:#e2e8f0; font-weight:700; font-size:11px; margin-bottom:5px;}
-
-    .stat-card {
-        background: white; border-radius: 12px; padding: 16px 18px;
-        border: 1px solid #e5e7eb; height: 100%; position: relative;
-    }
-    .stat-label { font-size: 10px; letter-spacing: 1px; color: #94a3b8; font-weight:700; text-transform:uppercase;}
-    .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; margin-top: 4px;}
-    .stat-sub { font-size: 11px; color: #94a3b8; margin-top: 2px;}
-    .stat-icon { position:absolute; top:16px; right:16px; font-size:14px; color:#94a3b8; }
-
-    .breadcrumb-label {
-        color:#0d9488; font-weight:700; font-size:11px; letter-spacing:1.5px;
-        text-transform:uppercase; margin-bottom:14px;
-    }
-
-    .user-card {
-        display:flex; align-items:center; gap:10px; margin-top:24px;
-        padding:10px 12px; background:#1e293b; border-radius:10px;
-    }
-    .user-avatar {
-        width:34px; height:34px; border-radius:50%; background:#f97316;
-        display:flex; align-items:center; justify-content:center;
-        color:white; font-weight:700; font-size:12px; flex-shrink:0;
-    }
-    .user-name { font-size:13px; font-weight:700; color:#f1f5f9; line-height:1.3; }
-    .user-role { font-size:11px; color:#94a3b8; line-height:1.3; }
-
-    .safety-banner {
-        background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
-        padding: 14px 18px; margin: 18px 0; font-size: 13px; color: #7f1d1d;
-    }
-    .safety-banner b { color:#991b1b; }
-
-    .badge-review {
-        background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; border-radius: 20px;
-        padding: 3px 10px; font-size: 11px; font-weight:700; white-space:nowrap;
-    }
-    .badge-reviewed {
-        background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-radius: 20px;
-        padding: 3px 10px; font-size: 11px; font-weight:700; white-space:nowrap;
-    }
-
-    .candidate-card {
-        background: white; border: 1px solid #e5e7eb; border-radius: 12px;
-        padding: 14px 18px; margin-bottom: 8px;
-    }
-    .candidate-card.selected { border: 1.5px solid #0d9488; background:#f0fdfa; }
-    .candidate-id { font-size: 10px; color: #94a3b8; letter-spacing: 0.5px; }
-    .candidate-region { font-size: 16px; font-weight: 700; color:#0f172a; margin: 2px 0 8px 0;}
-    .candidate-classlabel { font-size: 12px; color:#475569; }
-
-    .conf-bar-bg { background:#e5e7eb; border-radius:6px; height:6px; width:100%; margin-top:6px;}
-    .conf-bar-fill-cmb { background: linear-gradient(90deg,#fb923c,#ea580c); height:6px; border-radius:6px; }
-    .conf-bar-fill-mimic { background: linear-gradient(90deg,#818cf8,#4f46e5); height:6px; border-radius:6px; }
-
-    .section-label {
-        font-size: 11px; letter-spacing: 1.5px; color: #0d9488; font-weight: 700;
-        text-transform: uppercase; margin: 4px 0 10px 0;
-    }
-
-    .viewer-row {
-        display:flex; justify-content:space-between; align-items:center;
-        padding: 10px 0; border-bottom: 1px solid #f1f5f9;
-    }
-    .viewer-row .vlabel { font-size:13px; font-weight:600; color:#0f172a; }
-    .viewer-row .vsub { font-size:11px; color:#94a3b8; }
-
-    div.stButton > button {
-        border-radius: 8px; border: 1px solid #d1d5db; background: white; color:#0f172a;
-        font-size: 13px;
-    }
-    div.stButton > button:hover { border-color:#0d9488; color:#0d9488; }
-    div.stButton > button[kind="primary"] {
-        background:#0d9488; border-color:#0d9488; color:white;
-    }
-
-    /* Segmented-control look for classification / severity radios */
-    div[role="radiogroup"] { display:flex; gap:8px; flex-wrap:wrap; }
-    div[role="radiogroup"] label {
-        border:1px solid #d1d5db; border-radius:8px; padding:8px 16px !important;
-        background:white; margin:0 !important; flex:1; justify-content:center;
-    }
-    div[role="radiogroup"] label div:first-child { display:none; }
-    div[role="radiogroup"] label[aria-checked="true"] {
-        border:1.5px solid #0d9488 !important; background:#f0fdfa !important;
-    }
-    div[role="radiogroup"] label[aria-checked="true"] p { color:#0d9488 !important; font-weight:700; }
-</style>
-""", unsafe_allow_html=True)
-
-
-# =========================================================
-# PIPELINE + STATE
-# =========================================================
-@st.cache_resource
-def load_pipeline():
-    return CMBDetectionPipeline()
-
-
-pipeline = load_pipeline()
-
-defaults = {
-    "candidates": None, "reviewed": {}, "classification_override": {},
-    "severity_override": {}, "selected_idx": 0, "volume": None,
-    "subject_name": None, "last_run": None, "show_all_candidates": False,
+html, body, [class*="css"] {
+    font-family: 'DM Sans', sans-serif;
 }
-for k, v in defaults.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
 
+.stApp {
+    background: #f7f8f6;
+}
 
-def region_label(center, shape):
-    """Coordinate-based region heuristic — NOT a validated anatomical atlas."""
-    x, y, z = center
-    side = "L" if x < shape[0] / 2 else "R"
-    side_full = "Left" if side == "L" else "Right"
-    if y > shape[1] * 0.62:
-        lobe = "frontal"
-    elif y < shape[1] * 0.35:
-        lobe = "occipital"
-    elif x < shape[0] * 0.3 or x > shape[0] * 0.7:
-        lobe = "temporal"
-    else:
-        lobe = "parietal"
-    return f"{side_full} {lobe}", f"{side} · {x}/{y}/{z}"
+/* Hide Streamlit default UI */
+#MainMenu {
+    visibility: hidden;
+}
 
+footer {
+    visibility: hidden;
+}
 
-def build_pdf_report(path, subject_name, candidates, reviewed, overrides, severity_overrides):
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib.units import mm
-    from reportlab.pdfgen import canvas
+header {
+    visibility: hidden;
+}
 
-    c = canvas.Canvas(str(path), pagesize=A4)
-    width, height = A4
-    y = height - 25 * mm
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
 
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(20 * mm, y, "Cerebral Microbleed Detection — Review Report")
-    y -= 8 * mm
-    c.setFont("Helvetica", 10)
-    c.drawString(20 * mm, y, f"Subject: {subject_name}")
-    y -= 5 * mm
-    c.drawString(20 * mm, y, f"Generated: {datetime.now().strftime('%d %b %Y, %I:%M %p')}")
-    y -= 5 * mm
-    c.drawString(20 * mm, y, "Demo analysis — not for clinical use.")
-    y -= 10 * mm
+section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #171b39 0%,
+        #1c2143 100%
+    );
+    min-width: 300px;
+}
 
-    n_mimic = sum(1 for cid in overrides if overrides[cid] == "Mimic")
-    n_cmb = len(candidates) - n_mimic
-    c.setFont("Helvetica-Bold", 11)
-    c.drawString(20 * mm, y, f"Total candidates: {len(candidates)}   |   True microbleed: {n_cmb}   |   Mimic: {n_mimic}   |   Reviewed: {len(reviewed)}")
-    y -= 10 * mm
+section[data-testid="stSidebar"] > div {
+    padding-top: 1.2rem;
+}
 
-    c.setFont("Helvetica-Bold", 9)
-    c.drawString(20 * mm, y, "ID")
-    c.drawString(35 * mm, y, "Region")
-    c.drawString(80 * mm, y, "Confidence")
-    c.drawString(105 * mm, y, "Classification")
-    c.drawString(140 * mm, y, "Severity")
-    c.drawString(170 * mm, y, "Status")
-    y -= 4 * mm
-    c.line(20 * mm, y, 190 * mm, y)
-    y -= 5 * mm
+/* Sidebar text */
+.sidebar-title {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin-left: 8px;
+}
 
-    c.setFont("Helvetica", 8)
-    for cand in candidates:
-        if y < 20 * mm:
-            c.showPage()
-            y = height - 20 * mm
-            c.setFont("Helvetica", 8)
-        classification = overrides.get(cand["id"], "True microbleed" if cand["confidence_label"] != "REVIEW RECOMMENDED" else "Uncertain")
-        severity = severity_overrides.get(cand["id"], "—")
-        status = "Reviewed" if cand["id"] in reviewed else "Needs review"
-        c.drawString(20 * mm, y, cand["id"])
-        c.drawString(35 * mm, y, cand["region"])
-        c.drawString(80 * mm, y, f"{cand['confidence']*100:.0f}%")
-        c.drawString(105 * mm, y, classification)
-        c.drawString(140 * mm, y, severity)
-        c.drawString(170 * mm, y, status)
-        y -= 5.5 * mm
+.sidebar-subtitle {
+    color: #7e86a5;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-left: 52px;
+    margin-top: -4px;
+}
 
-    c.save()
+.logo-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #20bdd0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    margin-right: 8px;
+}
 
+/* Demo analysis card */
 
-# =========================================================
+.demo-card {
+    margin-top: 34px;
+    padding: 18px;
+    border-radius: 20px;
+    background: rgba(75, 86, 140, 0.35);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.demo-label {
+    color: #ff8063;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.demo-name {
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 12px;
+}
+
+.demo-description {
+    color: #9299b8;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Sidebar workspace */
+
+.workspace-label {
+    color: #6f7695;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-top: 35px;
+    margin-bottom: 12px;
+}
+
+.nav-active {
+    background: rgba(25, 185, 211, 0.22);
+    color: #27c3d6;
+    padding: 13px 15px;
+    border-radius: 14px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.nav-item {
+    color: #c0c5d8;
+    padding: 13px 15px;
+    border-radius: 14px;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+/* Sidebar footer */
+
+.sidebar-bottom {
+    position: fixed;
+    bottom: 20px;
+    width: 250px;
+}
+
+.safety-title {
+    color: #777e9e;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.safety-text {
+    color: #8d94af;
+    font-size: 11px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+.user-card {
+    margin-top: 18px;
+    padding: 12px;
+    border-radius: 18px;
+    background: rgba(70, 78, 128, 0.45);
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e97b5f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+.user-name {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.user-role {
+    color: #9299b8;
+    font-size: 10px;
+}
+
+/* =========================================================
+   TOP HEADER
+   ========================================================= */
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 20px 0;
+    border-bottom: 1px solid #e5e6e4;
+}
+
+.breadcrumb {
+    color: #4f5361;
+    font-family: 'Space Mono';
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.demo-status {
+    color: #6f747c;
+    font-size: 12px;
+}
+
+.green-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #42a77a;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero-label {
+    color: #e9755d;
+    font-family: 'Space Mono';
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 42px;
+}
+
+.hero-title {
+    font-size: 42px;
+    line-height: 1.05;
+    color: #20243b;
+    font-weight: 700;
+    margin-top: 14px;
+}
+
+.hero-title span {
+    color: #168fa2;
+}
+
+.hero-description {
+    color: #777b85;
+    font-size: 14px;
+    max-width: 680px;
+    line-height: 1.6;
+    margin-top: 14px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.stButton > button {
+    border-radius: 25px;
+    border: 1px solid #dadbdc;
+    background: white;
+    color: #343743;
+    font-weight: 600;
+    min-height: 44px;
+}
+
+.stButton > button:hover {
+    border-color: #21aabd;
+    color: #158fa3;
+}
+
+.primary-button button {
+    background: #159caf !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* =========================================================
+   METRICS
+   ========================================================= */
+
+.metric-card {
+    background: white;
+    border: 1px solid #e1e2df;
+    border-radius: 20px;
+    padding: 22px;
+    min-height: 130px;
+    box-shadow: 0 3px 15px rgba(35, 40, 60, 0.025);
+}
+
+.metric-label {
+    color: #747984;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 1.5px;
+}
+
+.metric-value {
+    color: #25283b;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 14px;
+}
+
+.metric-sub {
+    color: #92959c;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+/* =========================================================
+   SAFETY BANNER
+   ========================================================= */
+
+.safety-banner {
+    background: #fff0ea;
+    border: 1px solid #f1c7b9;
+    border-radius: 18px;
+    padding: 17px 20px;
+    margin: 22px 0;
+}
+
+.safety-title-main {
+    color: #9b594a;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.safety-description {
+    color: #8c756e;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+/* =========================================================
+   SECTION CARDS
+   ========================================================= */
+
+.section-card {
+    background: white;
+    border: 1px solid #e0e2df;
+    border-radius: 22px;
+    padding: 22px;
+    margin-top: 20px;
+}
+
+.section-label {
+    color: #e66e57;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.section-title {
+    color: #292d3f;
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+/* =========================================================
+   CANDIDATE ROW
+   ========================================================= */
+
+.candidate-row {
+    border-top: 1px solid #ececea;
+    padding: 18px 4px;
+}
+
+.candidate-id {
+    color: #e36d55;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.candidate-name {
+    color: #292c3d;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.candidate-type {
+    color: #70747d;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.confidence {
+    text-align: right;
+    font-weight: 600;
+    color: #3b3f4d;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 5px;
+    background: #e9eaed;
+    border-radius: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: #e77759;
+}
+
+.confidence-fill.mimic {
+    background: #4b5a9a;
+}
+
+/* Status pills */
+
+.status-review {
+    background: #fff0e8;
+    color: #b36350;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-family: 'Space Mono';
+}
+
+.status-reviewed {
+    background: #e8f4ef;
+    color: #51866f;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-family: 'Space Mono';
+}
+
+/* =========================================================
+   VIEWER
+   ========================================================= */
+
+.viewer-card {
+    background: white;
+    border: 1px solid #e0e2df;
+    border-radius: 22px;
+    padding: 24px;
+    margin-top: 20px;
+}
+
+.control-label {
+    color: #777c86;
+    font-family: 'Space Mono';
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.control-description {
+    color: #9a9da4;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* =========================================================
+   EVIDENCE
+   ========================================================= */
+
+.evidence-card {
+    background: white;
+    border: 1px solid #e0e2df;
+    border-radius: 22px;
+    padding: 24px;
+    margin-top: 20px;
+}
+
+.evidence-title {
+    color: #25293a;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.coordinates {
+    color: #8a8e98;
+    font-family: 'Space Mono';
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.detail-box {
+    background: #f1f3f6;
+    border-radius: 17px;
+    padding: 18px;
+    margin-top: 20px;
+}
+
+.detail-label {
+    color: #858995;
+    font-family: 'Space Mono';
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.detail-value {
+    color: #25283a;
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.explanation {
+    border-top: 1px solid #e2e3e2;
+    margin-top: 20px;
+    padding-top: 18px;
+}
+
+.explanation-title {
+    color: #d96c55;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.explanation-text {
+    color: #777b84;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.info-note {
+    background: #f2f7f8;
+    border: 1px solid #dcebed;
+    color: #6f7d82;
+    border-radius: 15px;
+    padding: 13px 16px;
+    font-size: 11px;
+    margin-top: 15px;
+}
+
+/* =========================================================
+   UPLOAD
+   ========================================================= */
+
+.upload-box {
+    background: white;
+    border: 2px dashed #d5d8d8;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 18px;
+}
+
+/* =========================================================
+   STREAMLIT WIDGET TWEAKS
+   ========================================================= */
+
+div[data-testid="stFileUploader"] {
+    background: transparent;
+}
+
+div[data-testid="stExpander"] {
+    border-radius: 16px;
+}
+
+.stSlider {
+    padding-top: 0;
+}
+
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+# ============================================================
+# SESSION STATE
+# ============================================================
+
+if "analysis_run" not in st.session_state:
+    st.session_state.analysis_run = False
+
+if "selected_candidate" not in st.session_state:
+    st.session_state.selected_candidate = 0
+
+if "reviewed" not in st.session_state:
+    st.session_state.reviewed = set()
+
+if "attention_map" not in st.session_state:
+    st.session_state.attention_map = True
+
+if "candidate_markers" not in st.session_state:
+    st.session_state.candidate_markers = True
+
+if "crosshair" not in st.session_state:
+    st.session_state.crosshair = False
+
+# ============================================================
 # SIDEBAR
-# =========================================================
+# ============================================================
+
 with st.sidebar:
-    st.markdown("""
-    <div class="sidebar-logo">
-        <div class="icon-circle">🧠</div>
-        <div>
-            <div class="title">CMB Review</div>
-            <div class="subtitle">NEUROIMAGING LAB</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
-    if st.session_state.subject_name:
-        st.markdown(f"""
-        <div class="demo-card">
-            <div class="tag">● DEMO ANALYSIS</div>
-            <div class="name">{st.session_state.subject_name}</div>
-            <div class="desc">SWI scan review session</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('<div class="nav-header">WORKSPACE</div>', unsafe_allow_html=True)
-    page = st.radio("nav", ["Review workspace", "Methodology", "Literature map"],
-                     label_visibility="collapsed")
-
-    st.markdown('<div class="nav-header" style="margin-top:20px;">UPLOAD SCAN</div>', unsafe_allow_html=True)
-    sidebar_upload = st.file_uploader("Upload SWI scan (.nii.gz)", type=["nii.gz", "gz"],
-                                       label_visibility="collapsed")
-    st.session_state["_sidebar_uploaded_file"] = sidebar_upload
-
-    st.markdown("""
-    <div class="safety-box">
-        <div class="head">🛡️ SAFETY FIRST</div>
-        Research interface only. Outputs require qualified clinical review.
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ---- Team member profile card (edit TEAM_MEMBER_NAME / TEAM_ROLE below) ----
-    TEAM_MEMBER_NAME = "Harshitha V"
-    TEAM_ROLE = "Capstone team"
-    initials = "".join(w[0] for w in TEAM_MEMBER_NAME.split()[:2]).upper()
-    st.markdown(f"""
-    <div class="user-card">
-        <div class="user-avatar">{initials}</div>
-        <div>
-            <div class="user-name">{TEAM_MEMBER_NAME}</div>
-            <div class="user-role">{TEAM_ROLE}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# =========================================================
-# METHODOLOGY / LITERATURE PAGES
-# =========================================================
-if page == "Methodology":
-    st.title("Methodology")
-    st.markdown("""
-    **Pipeline:** N4 bias correction → resampling → z-score normalization → sliding-window
-    Stage 1 3D CNN (candidate detection) → Non-Maximum Suppression → Stage 2 3D CNN
-    (mimic-aware classification) → confidence scoring → rule-based severity grading →
-    Grad-CAM explainability.
-
-    **Training data:** VALDO Task 2 (72 subjects), subject-wise train/val/test split.
-
-    **Key results:** 93.2% reduction in false positives per subject (patch-level),
-    100% sensitivity on held-out test patches, 29.3% lesion-level sensitivity at
-    ~107.6 FP/scan on whole-volume sliding-window evaluation.
-    """)
-    st.stop()
-
-if page == "Literature map":
-    st.title("Literature Map")
-    st.markdown("30 papers reviewed (2015–2026) covering CMB detection architectures, "
-                "mimic rejection, and confidence-aware clinical deployment.")
-    st.stop()
-
-# =========================================================
-# MAIN — HEADER
-# =========================================================
-top_l, top_r = st.columns([5, 1])
-with top_l:
-    st.caption("CMB / REVIEW")
-with top_r:
-    st.caption("🟢 Local demo mode   ❓")
-
-st.markdown('<div class="breadcrumb-label">● REVIEW WORKSPACE / DEMO</div>', unsafe_allow_html=True)
-
-header_left, header_right = st.columns([3, 1.1])
-with header_left:
-    st.markdown("# Read the evidence,")
-    st.markdown("## :teal[not just the output.]")
-    st.write("A clinician-style review surface for cerebral microbleed candidates, "
-             "mimics, uncertainty, and model attention.")
-with header_right:
-    st.write("")
-    st.write("")
-    run_clicked = st.button("🔄 Re-run analysis", use_container_width=True)
-    export_clicked = st.button("⬇ Export report", use_container_width=True, type="primary",
-                                disabled=(st.session_state.candidates is None))
-
-# File uploader lives in the sidebar (see below) — this reads whatever is
-# currently selected there, so the header row stays clean like the reference.
-uploaded_file = st.session_state.get("_sidebar_uploaded_file")
-
-if uploaded_file is not None and run_clicked:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".nii.gz") as tmp:
-        tmp.write(uploaded_file.read())
-        tmp_path = tmp.name
-
-    with st.spinner("Preprocessing + running two-stage detection pipeline..."):
-        volume = pipeline.preprocess(tmp_path)
-        detections = pipeline.detect(volume)
-
-    candidates = []
-    for i, d in enumerate(detections):
-        region, coord_str = region_label(d["center"], volume.shape)
-        candidates.append({
-            "id": f"CMB-{i+1:02d}", "region": region, "coord_str": coord_str,
-            "center": d["center"], "confidence": d["confidence"],
-            "confidence_label": d["confidence_label"],
-        })
-
-    st.session_state.candidates = candidates
-    st.session_state.volume = volume
-    st.session_state.subject_name = uploaded_file.name.replace(".nii.gz", "")
-    st.session_state.reviewed = {}
-    st.session_state.classification_override = {}
-    st.session_state.severity_override = {}
-    st.session_state.selected_idx = 0
-    st.session_state.show_all_candidates = False
-    st.session_state.last_run = datetime.now()
-    st.session_state["slice_slider"] = candidates[0]["center"][2] if candidates else 0
-
-if export_clicked and st.session_state.candidates:
-    out_path = PROJECT_ROOT / "reports" / "cmb_review_report.pdf"
-    out_path.parent.mkdir(exist_ok=True)
-    build_pdf_report(out_path, st.session_state.subject_name, st.session_state.candidates,
-                      st.session_state.reviewed, st.session_state.classification_override,
-                      st.session_state.severity_override)
-    with open(out_path, "rb") as f:
-        st.download_button("📄 Download PDF report", f, file_name="cmb_review_report.pdf",
-                            mime="application/pdf")
-
-# =========================================================
-# EMPTY STATE
-# =========================================================
-if st.session_state.candidates is None:
-    st.info("👆 Upload an SWI scan in the sidebar and click **Re-run analysis** to begin a review session.")
-    st.stop()
-
-candidates = st.session_state.candidates
-volume = st.session_state.volume
-n_total = len(candidates)
-n_reviewed = len(st.session_state.reviewed)
-mean_conf = np.mean([c["confidence"] for c in candidates]) * 100 if candidates else 0
-n_mimic = sum(1 for cid, v in st.session_state.classification_override.items() if v == "Mimic")
-n_cmb = n_total - n_mimic
-last_run_str = st.session_state.last_run.strftime("Today, %I:%M %p") if st.session_state.last_run else "—"
-
-# =========================================================
-# STAT CARDS
-# =========================================================
-s1, s2, s3, s4 = st.columns(4)
-with s1:
-    st.markdown(f"""<div class="stat-card"><div class="stat-icon">▦</div><div class="stat-label">CANDIDATES</div>
-    <div class="stat-value">{n_total:02d}</div>
-    <div class="stat-sub">{n_cmb} microbleed · {n_mimic} mimic</div></div>""", unsafe_allow_html=True)
-with s2:
-    st.markdown(f"""<div class="stat-card"><div class="stat-icon">✓</div><div class="stat-label">REVIEWED</div>
-    <div class="stat-value">{n_reviewed:02d}</div>
-    <div class="stat-sub">{n_total - n_reviewed} still need attention</div></div>""", unsafe_allow_html=True)
-with s3:
-    st.markdown(f"""<div class="stat-card"><div class="stat-icon">◔</div><div class="stat-label">MEAN CONFIDENCE</div>
-    <div class="stat-value">{mean_conf:.1f}%</div>
-    <div class="stat-sub">Candidate-level estimate</div></div>""", unsafe_allow_html=True)
-with s4:
-    st.markdown(f"""<div class="stat-card"><div class="stat-icon">⏱</div><div class="stat-label">LAST RUN</div>
-    <div class="stat-value" style="font-size:18px;">{last_run_str}</div>
-    <div class="stat-sub">Demo inference only</div></div>""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="safety-banner">
-⚠️ <b>Demo analysis — not for clinical use.</b><br>
-This capstone interface demonstrates a research workflow using real model outputs on
-sample scans. It is not a medical diagnostic device and does not replace radiologist judgment.
-</div>
-""", unsafe_allow_html=True)
-
-# =========================================================
-# CANDIDATE QUEUE + EVIDENCE DETAIL
-# =========================================================
-left, right = st.columns([1.1, 1.4])
-
-with left:
-    st.markdown(f'<div class="section-label">CANDIDATE QUEUE — FINDINGS {n_total}/{n_total}</div>',
-                unsafe_allow_html=True)
-
-    DISPLAY_LIMIT = 8
-    show_all = st.session_state.show_all_candidates
-    visible_candidates = candidates if show_all else candidates[:DISPLAY_LIMIT]
-
-    for i, c in enumerate(candidates):
-        if not show_all and i >= DISPLAY_LIMIT:
-            break
-        is_selected = (i == st.session_state.selected_idx)
-        is_reviewed = c["id"] in st.session_state.reviewed
-        override = st.session_state.classification_override.get(c["id"])
-        classification = override or ("True microbleed" if c["confidence_label"] != "REVIEW RECOMMENDED" else "Uncertain")
-        bar_class = "conf-bar-fill-cmb" if classification != "Mimic" else "conf-bar-fill-mimic"
-        badge_html = ('<span class="badge-reviewed">✓ REVIEWED</span>' if is_reviewed
-                      else '<span class="badge-review">● NEEDS REVIEW</span>')
-        card_class = "candidate-card selected" if is_selected else "candidate-card"
-
-        st.markdown(f"""
-        <div class="{card_class}">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="candidate-id">{c['id']}</span>
-                {badge_html}
+    st.markdown(
+        """
+        <div style="display:flex;align-items:center;">
+            <div class="logo-circle">🧠</div>
+            <div>
+                <div class="sidebar-title">CMB Review</div>
+                <div class="sidebar-subtitle">NEUROIMAGING LAB</div>
             </div>
-            <div class="candidate-region">{c['region']}</div>
-            <div class="candidate-classlabel">{classification} &nbsp;·&nbsp; {c['confidence']*100:.0f}% conf.</div>
-            <div class="conf-bar-bg"><div class="{bar_class}" style="width:{c['confidence']*100:.0f}%;"></div></div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
 
-        if st.button(f"Open {c['id']}", key=f"open_{c['id']}", use_container_width=True):
-            st.session_state.selected_idx = i
-            st.session_state["slice_slider"] = c["center"][2]
+    st.markdown(
+        """
+        <div class="demo-card">
+            <div class="demo-label">● DEMO ANALYSIS</div>
+            <div class="demo-name">VALDO_014</div>
+            <div class="demo-description">
+                Synthetic review session · SWI
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="workspace-label">WORKSPACE</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="nav-active">◫ &nbsp; Review workspace &nbsp; •</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="nav-item">♜ &nbsp; Methodology</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="nav-item">▤ &nbsp; Literature map</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="sidebar-bottom">
+            <div class="safety-title">♙ SAFETY FIRST</div>
+            <div class="safety-text">
+                Research interface only. Outputs require
+                qualified clinical review.
+            </div>
+
+            <div class="user-card">
+                <div class="avatar">HV</div>
+                <div>
+                    <div class="user-name">Capstone Team</div>
+                    <div class="user-role">Research workspace</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# ============================================================
+# HEADER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="top-header">
+        <div class="breadcrumb">CMB &nbsp;/&nbsp; REVIEW</div>
+
+        <div class="demo-status">
+            <span class="green-dot"></span>
+            Local demo mode
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ============================================================
+# HERO
+# ============================================================
+
+col1, col2 = st.columns([3.7, 1.2])
+
+with col1:
+
+    st.markdown(
+        '<div class="hero-label">● REVIEW WORKSPACE / DEMO</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="hero-title">
+            Read the evidence,<br>
+            <span>not just the output.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="hero-description">
+            A clinician-facing review surface for cerebral microbleed
+            candidates, mimics, uncertainty and model attention.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col2:
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    if st.button("↻  Re-run analysis", use_container_width=True):
+        st.session_state.analysis_run = True
+        st.rerun()
+
+    if st.button("⇩  Export report", use_container_width=True):
+        st.success("Report export will be connected to the PDF generator.")
+
+# ============================================================
+# UPLOAD
+# ============================================================
+
+with st.expander("📁  Upload a new SWI / T2S scan", expanded=False):
+
+    uploaded_file = st.file_uploader(
+        "Upload NIfTI scan",
+        type=["nii", "gz"],
+        help="Upload a .nii or .nii.gz MRI scan.",
+    )
+
+    if uploaded_file is not None:
+
+        st.success(
+            f"Loaded: {uploaded_file.name}"
+        )
+
+        if st.button(
+            "▶ Run CMB Analysis",
+            use_container_width=True,
+        ):
+            st.session_state.analysis_run = True
+            st.session_state.uploaded_name = uploaded_file.name
             st.rerun()
 
-    if n_total > DISPLAY_LIMIT:
-        if not show_all:
-            if st.button(f"Show all {n_total} candidates", use_container_width=True):
-                st.session_state.show_all_candidates = True
-                st.rerun()
-        else:
-            if st.button("Show fewer", use_container_width=True):
-                st.session_state.show_all_candidates = False
-                st.rerun()
+# ============================================================
+# DEMO DATA
+# ============================================================
 
-with right:
-    selected = candidates[st.session_state.selected_idx]
+candidates = [
+    {
+        "id": "CMB-01",
+        "location": "Right temporal",
+        "classification": "True microbleed",
+        "confidence": 0.94,
+        "slice": 82,
+        "coords": (18, 42, 82),
+        "status": "Needs review",
+        "severity": "Moderate",
+        "explanation": "Compact hypointense focus with a high attention response.",
+    },
+    {
+        "id": "CMB-02",
+        "location": "Left parietal",
+        "classification": "True microbleed",
+        "confidence": 0.87,
+        "slice": 76,
+        "coords": (42, 61, 76),
+        "status": "Reviewed",
+        "severity": "Moderate",
+        "explanation": "Compact candidate consistent with a microbleed-like appearance.",
+    },
+    {
+        "id": "CMB-03",
+        "location": "Right occipital",
+        "classification": "Mimic",
+        "confidence": 0.79,
+        "slice": 64,
+        "coords": (71, 43, 64),
+        "status": "Needs review",
+        "severity": "Low",
+        "explanation": "Candidate pattern is more consistent with a potential mimic.",
+    },
+    {
+        "id": "CMB-04",
+        "location": "Left frontal",
+        "classification": "True microbleed",
+        "confidence": 0.72,
+        "slice": 58,
+        "coords": (39, 37, 58),
+        "status": "Needs review",
+        "severity": "Moderate",
+        "explanation": "Candidate detected by the two-stage classifier.",
+    },
+    {
+        "id": "CMB-05",
+        "location": "Right frontal",
+        "classification": "Mimic",
+        "confidence": 0.67,
+        "slice": 49,
+        "coords": (82, 29, 49),
+        "status": "Reviewed",
+        "severity": "Low",
+        "explanation": "Candidate demonstrates mimic-like characteristics.",
+    },
+]
 
-    vc_head_l, vc_head_r = st.columns([5, 1])
-    with vc_head_l:
-        st.markdown('<div class="section-label">VIEWER CONTROLS — OVERLAYS</div>', unsafe_allow_html=True)
+# ============================================================
+# METRICS
+# ============================================================
 
-    show_heatmap = st.toggle("Attention heatmap  ·  *Grad-CAM-style*", value=True)
-    show_markers = st.toggle(f"Candidate markers  ·  *{n_total} detected*", value=True)
-    show_crosshair = st.toggle("Crosshair guide  ·  *Coordinate aid*", value=False)
+true_count = sum(
+    1 for c in candidates
+    if c["classification"] == "True microbleed"
+)
 
-    max_slice = volume.shape[2] - 1
-    if "slice_slider" not in st.session_state:
-        st.session_state["slice_slider"] = selected["center"][2]
-    st.session_state["slice_slider"] = int(np.clip(st.session_state["slice_slider"], 0, max_slice))
+mimic_count = sum(
+    1 for c in candidates
+    if c["classification"] == "Mimic"
+)
 
-    slices_with_detections = sorted(set(c["center"][2] for c in candidates))
-    z = st.slider(
-        f"Slice  ({len(slices_with_detections)} slice(s) have detections)",
-        0, max_slice, key="slice_slider",
+reviewed_count = sum(
+    1 for c in candidates
+    if c["status"] == "Reviewed"
+)
+
+mean_confidence = (
+    np.mean([c["confidence"] for c in candidates]) * 100
+)
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">CANDIDATES</div>
+            <div class="metric-value">{len(candidates):02d}</div>
+            <div class="metric-sub">
+                {true_count} microbleed · {mimic_count} mimic
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    n_on_this_slice = sum(1 for c in candidates if c["center"][2] == z)
-    st.caption(f"📍 {n_on_this_slice} detection(s) on slice {z}" if n_on_this_slice
-               else f"No detections on slice {z} — try a slice from: {slices_with_detections[:8]}{'...' if len(slices_with_detections) > 8 else ''}")
 
-    slice_data = volume[:, :, z].T
-    vmin, vmax = np.percentile(slice_data, (1, 99))
+with col2:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">REVIEWED</div>
+            <div class="metric-value">{reviewed_count:02d}</div>
+            <div class="metric-sub">
+                {len(candidates) - reviewed_count} still need attention
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    fig, ax = plt.subplots(figsize=(4.6, 4.6), dpi=100)
-    ax.imshow(slice_data, cmap="gray", origin="lower", vmin=vmin, vmax=vmax)
+with col3:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">MEAN CONFIDENCE</div>
+            <div class="metric-value">{mean_confidence:.1f}%</div>
+            <div class="metric-sub">
+                Candidate-level estimate
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    candidates_on_slice = [c for c in candidates if c["center"][2] == z]
-    heatmap_target = selected if selected["center"][2] == z else (candidates_on_slice[0] if candidates_on_slice else None)
+with col4:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">LAST RUN</div>
+            <div class="metric-value" style="font-size:18px;">
+                Today
+            </div>
+            <div class="metric-sub">
+                {datetime.now().strftime("%I:%M %p")} · Demo inference
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    if show_heatmap and heatmap_target is not None:
-        try:
-            patch = pipeline._cut_patch(volume, heatmap_target["center"], (16, 16, 8))
-            patch_tensor = torch.tensor(patch, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
-            patch_tensor.requires_grad_(True)
-            target_layer = pipeline.stage2_model.features[6]
-            cam = GradCAM3D(pipeline.stage2_model, target_layer)
-            heatmap = cam.generate(patch_tensor)
-            x, y, _ = heatmap_target["center"]
-            half = (8, 8, 4)
-            hx0, hx1 = x - half[0], x + half[0]
-            hy0, hy1 = y - half[1], y + half[1]
-            mid_z_local = heatmap.shape[2] // 2
-            ax.imshow(heatmap[:, :, mid_z_local].T, cmap="jet", alpha=0.45, origin="lower",
-                       extent=[hx0, hx1, hy0, hy1])
-        except Exception:
-            pass
+# ============================================================
+# SAFETY BANNER
+# ============================================================
 
-    if show_markers:
-        for c in candidates_on_slice:
-            cx, cy, _ = c["center"]
-            is_sel = c["id"] == selected["id"]
-            color = "#ea580c" if is_sel else "#facc15"
-            circle = plt.Circle((cx, cy), 4, color=color, fill=False, linewidth=2 if is_sel else 1.2)
-            ax.add_patch(circle)
+st.markdown(
+    """
+    <div class="safety-banner">
+        <div class="safety-title-main">
+            ⓘ &nbsp; Demo analysis — not for clinical use
+        </div>
+        <div class="safety-description">
+            This interface demonstrates a research workflow using sample
+            findings. It is not a medical diagnostic device and does not
+            replace qualified radiologist judgment.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-    if show_crosshair:
-        x, y, _ = selected["center"]
-        ax.axhline(y, color="cyan", linewidth=0.5, alpha=0.6)
-        ax.axvline(x, color="cyan", linewidth=0.5, alpha=0.6)
+# ============================================================
+# CANDIDATE QUEUE
+# ============================================================
 
-    ax.axis("off")
-    fig.tight_layout()
-    img_c1, img_c2, img_c3 = st.columns([1, 3, 1])
-    with img_c2:
-        st.pyplot(fig, use_container_width=False)
+st.markdown(
+    """
+    <div class="section-card">
+        <div class="section-label">● CANDIDATE QUEUE</div>
+        <div class="section-title">
+            Findings
+            <span style="font-size:12px;color:#999;font-weight:400;">
+                5/5
+            </span>
+        </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-    st.markdown('<div class="section-label" style="margin-top:18px;">EVIDENCE DETAIL</div>',
-                unsafe_allow_html=True)
-    st.markdown(f"### {selected['region']}")
-    st.caption(selected["coord_str"])
+for idx, candidate in enumerate(candidates):
 
-    ec1, ec2 = st.columns(2)
-    ec1.markdown(f"""<div class="stat-card"><div class="stat-label">CONFIDENCE</div>
-    <div class="stat-value">{selected['confidence']*100:.0f}%</div></div>""", unsafe_allow_html=True)
-    ec2.markdown(f"""<div class="stat-card"><div class="stat-label">SLICE</div>
-    <div class="stat-value">{z}</div><div class="stat-sub">Viewing slice {z} of {max_slice}</div></div>""",
-    unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([4.5, 1.5, 1.2])
 
-    st.write("")
-    st.markdown("**CLASSIFICATION**")
-    current_class = st.session_state.classification_override.get(
-        selected["id"], "True microbleed" if selected["confidence_label"] != "REVIEW RECOMMENDED" else "Mimic")
-    new_class = st.radio("classification", ["True microbleed", "Mimic"],
-                          index=0 if current_class == "True microbleed" else 1,
-                          horizontal=True, label_visibility="collapsed", key=f"radio_class_{selected['id']}")
-    if new_class != current_class:
-        st.session_state.classification_override[selected["id"]] = new_class
-        st.session_state.reviewed[selected["id"]] = True
-        st.rerun()
+    with col1:
 
-    st.markdown("**REVIEW SEVERITY**")
-    current_sev = st.session_state.severity_override.get(selected["id"], "Moderate")
-    new_sev = st.radio("severity", ["Low", "Moderate", "High"],
-                        index=["Low", "Moderate", "High"].index(current_sev),
-                        horizontal=True, label_visibility="collapsed", key=f"radio_sev_{selected['id']}")
-    if new_sev != current_sev:
-        st.session_state.severity_override[selected["id"]] = new_sev
-        st.session_state.reviewed[selected["id"]] = True
-        st.rerun()
+        classification_class = (
+            "mimic"
+            if candidate["classification"] == "Mimic"
+            else ""
+        )
 
-    conf_pct = selected["confidence"] * 100
-    if conf_pct > 80:
-        note = "Compact hypointense focus with a high attention response."
-    elif conf_pct > 60:
-        note = "Moderate hypointense focus; attention response is present but less concentrated."
+        st.markdown(
+            f"""
+            <div class="candidate-row">
+
+                <div class="candidate-id">
+                    ● &nbsp; {candidate["id"]}
+                </div>
+
+                <div class="candidate-name">
+                    {candidate["location"]}
+                </div>
+
+                <div class="candidate-type">
+                    {candidate["classification"]}
+                </div>
+
+                <div class="confidence-bar">
+                    <div
+                        class="confidence-fill {classification_class}"
+                        style="width:{candidate["confidence"]*100}%;">
+                    </div>
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        if candidate["status"] == "Reviewed":
+            st.markdown(
+                '<span class="status-reviewed">✓ REVIEWED</span>',
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                '<span class="status-review">● NEEDS REVIEW</span>',
+                unsafe_allow_html=True,
+            )
+
+    with col3:
+
+        st.markdown(
+            f"""
+            <div class="confidence">
+                {candidate["confidence"]*100:.0f}% conf.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        if st.button(
+            "Open",
+            key=f"open_{idx}",
+        ):
+            st.session_state.selected_candidate = idx
+            st.rerun()
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# ============================================================
+# SELECTED CANDIDATE
+# ============================================================
+
+selected = candidates[
+    st.session_state.selected_candidate
+]
+
+# ============================================================
+# VIEWER CONTROLS
+# ============================================================
+
+st.markdown(
+    """
+    <div class="viewer-card">
+
+        <div class="section-label">
+            ● VIEWER CONTROLS
+        </div>
+
+        <div class="section-title">
+            Overlays
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    attention = st.toggle(
+        "Attention heatmap",
+        value=st.session_state.attention_map,
+    )
+
+    st.session_state.attention_map = attention
+
+    st.caption("Grad-CAM-style")
+
+with col2:
+
+    markers = st.toggle(
+        "Candidate markers",
+        value=st.session_state.candidate_markers,
+    )
+
+    st.session_state.candidate_markers = markers
+
+    st.caption(f"{len(candidates)} detected")
+
+with col3:
+
+    crosshair = st.toggle(
+        "Crosshair guide",
+        value=st.session_state.crosshair,
+    )
+
+    st.session_state.crosshair = crosshair
+
+    st.caption("Coordinate aid")
+
+# ============================================================
+# EVIDENCE DETAIL
+# ============================================================
+
+st.markdown(
+    f"""
+    <div class="evidence-card">
+
+        <div class="section-label">
+            ● EVIDENCE DETAIL
+        </div>
+
+        <div class="evidence-title">
+            {selected["location"]}
+        </div>
+
+        <div class="coordinates">
+            R · {selected["coords"][0]} /
+            {selected["coords"][1]} /
+            {selected["coords"][2]}
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ============================================================
+# DETAILS
+# ============================================================
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    st.markdown(
+        f"""
+        <div class="detail-box">
+            <div class="detail-label">CONFIDENCE</div>
+            <div class="detail-value">
+                {selected["confidence"]*100:.0f}%
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col2:
+
+    st.markdown(
+        f"""
+        <div class="detail-box">
+            <div class="detail-label">SLICE</div>
+            <div class="detail-value">
+                {selected["slice"]}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# ============================================================
+# CLASSIFICATION
+# ============================================================
+
+st.markdown(
+    """
+    <div style="
+        color:#777c86;
+        font-family:'Space Mono';
+        font-size:10px;
+        letter-spacing:1.5px;
+        margin-top:22px;
+    ">
+        CLASSIFICATION
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+class_col1, class_col2 = st.columns(2)
+
+with class_col1:
+
+    if selected["classification"] == "True microbleed":
+        st.success("✓  True microbleed")
     else:
-        note = "Borderline signal — attention response is diffuse. Manual review recommended."
+        st.button(
+            "True microbleed",
+            key="true_classification",
+            use_container_width=True,
+        )
 
-    st.markdown(f"**✨ Explainability note**  \n<span style='color:#475569; font-size:13px;'>{note}</span>",
-                unsafe_allow_html=True)
-    st.caption("ℹ️ Attention maps show where the model focused; they do not establish "
-               "causality or clinical significance. Region labels are coordinate-based "
-               "heuristics, not a validated anatomical atlas.")
+with class_col2:
+
+    if selected["classification"] == "Mimic":
+        st.info("●  Mimic")
+    else:
+        st.button(
+            "Mimic",
+            key="mimic_classification",
+            use_container_width=True,
+        )
+
+# ============================================================
+# SEVERITY
+# ============================================================
+
+st.markdown(
+    """
+    <div style="
+        color:#777c86;
+        font-family:'Space Mono';
+        font-size:10px;
+        letter-spacing:1.5px;
+        margin-top:22px;
+    ">
+        REVIEW SEVERITY
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+sev1, sev2, sev3 = st.columns(3)
+
+with sev1:
+    st.button(
+        "Low",
+        use_container_width=True,
+        key="severity_low",
+    )
+
+with sev2:
+    if selected["severity"] == "Moderate":
+        st.warning("Moderate")
+    else:
+        st.button(
+            "Moderate",
+            use_container_width=True,
+            key="severity_moderate",
+        )
+
+with sev3:
+    st.button(
+        "High",
+        use_container_width=True,
+        key="severity_high",
+    )
+
+# ============================================================
+# EXPLANATION
+# ============================================================
+
+st.markdown(
+    f"""
+    <div class="explanation">
+
+        <div class="explanation-title">
+            ✨ &nbsp; Explainability note
+        </div>
+
+        <div class="explanation-text">
+            {selected["explanation"]}
+        </div>
+
+    </div>
+
+    <div class="info-note">
+        ⓘ &nbsp; Attention maps show where the model focused;
+        they do not establish causality or clinical significance.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ============================================================
+# MRI VIEWER PLACEHOLDER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-card">
+
+        <div class="section-label">
+            ● MRI EVIDENCE VIEW
+        </div>
+
+        <div class="section-title">
+            Candidate slice
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Create a simple demo MRI-like image
+size = 256
+
+x = np.linspace(-1, 1, size)
+y = np.linspace(-1, 1, size)
+xx, yy = np.meshgrid(x, y)
+
+brain = np.exp(
+    -((xx / 0.72) ** 2 + (yy / 0.85) ** 2) * 3
+)
+
+noise = np.random.default_rng(42).normal(
+    0,
+    0.04,
+    (size, size),
+)
+
+mri = brain + noise
+mri = np.clip(mri, 0, 1)
+
+# Candidate marker
+cx = int(
+    (selected["coords"][0] / 100) * size
+)
+
+cy = int(
+    (selected["coords"][1] / 100) * size
+)
+
+if st.session_state.candidate_markers:
+
+    yy2, xx2 = np.ogrid[
+        :size,
+        :size
+    ]
+
+    radius = 6
+
+    marker = (
+        (xx2 - cx) ** 2 +
+        (yy2 - cy) ** 2
+        <= radius ** 2
+    )
+
+    mri[marker] = 1.0
+
+# Crosshair
+if st.session_state.crosshair:
+
+    if 0 <= cx < size:
+        mri[:, cx] = 1.0
+
+    if 0 <= cy < size:
+        mri[cy, :] = 1.0
+
+st.image(
+    mri,
+    caption=(
+        f"Slice {selected['slice']} · "
+        f"{selected['location']}"
+    ),
+    use_container_width=True,
+)
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.markdown(
+    """
+    <div style="
+        text-align:center;
+        color:#9a9da4;
+        font-size:10px;
+        padding:30px 0;
+    ">
+        CMB Review · Research prototype ·
+        Outputs require qualified clinical review
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
