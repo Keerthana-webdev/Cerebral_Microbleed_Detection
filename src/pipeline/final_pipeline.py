@@ -30,10 +30,6 @@ class CMBDetectionPipeline:
         self.stage2_model.load_state_dict( torch.load(STAGE2_MODEL_PATH, map_location=DEVICE))
         self.stage2_model.eval()
 
-    # ========================================================
-    # N4 BIAS CORRECTION
-    # ========================================================
-
     def _fix_uneven_brightness(self, image):
 
         image = sitk.Cast(image, sitk.sitkFloat32)
@@ -55,10 +51,6 @@ class CMBDetectionPipeline:
 
         return sitk.Cast(corrected, sitk.sitkFloat32)
 
-    # ========================================================
-    # RESAMPLING
-    # ========================================================
-
     def _resample(self, image):
 
         old_spacing = image.GetSpacing()
@@ -78,9 +70,6 @@ class CMBDetectionPipeline:
 
         return resampler.Execute(image)
 
-    # ========================================================
-    # PREPROCESSING
-    # ========================================================
 
     def preprocess(self, nifti_path):
 
@@ -101,10 +90,6 @@ class CMBDetectionPipeline:
 
         return array
 
-    # ========================================================
-    # PATCH EXTRACTION
-    # ========================================================
-
     def _cut_patch(self, volume, center, size):
 
         half = [s // 2 for s in size]
@@ -115,10 +100,6 @@ class CMBDetectionPipeline:
         )
 
         return volume[slices]
-
-    # ========================================================
-    # GRID GENERATION
-    # ========================================================
 
     def _generate_grid(self, shape):
 
@@ -132,10 +113,6 @@ class CMBDetectionPipeline:
                     centers.append((x, y, z))
 
         return centers
-
-    # ========================================================
-    # NMS
-    # ========================================================
 
     def _apply_nms(self, centers, probs, min_distance):
 
@@ -158,9 +135,6 @@ class CMBDetectionPipeline:
 
         return kept_centers, kept_probs
 
-    # ========================================================
-    # DETECTION
-    # ========================================================
 
     def detect(self, volume, batch_size=64, progress_callback=None):
 
@@ -173,10 +147,6 @@ class CMBDetectionPipeline:
                 continue
             if patch.std() > 0.05:
                 candidate_centers.append(center)
-
-        # ----------------------------------------------------
-        # STAGE 1
-        # ----------------------------------------------------
 
         stage1_hits = []
         total_candidates = len(candidate_centers)
@@ -202,10 +172,6 @@ class CMBDetectionPipeline:
             if progress_callback:
                 fraction = start / max(total_candidates, 1)
                 progress_callback(fraction * 0.50)
-
-        # ----------------------------------------------------
-        # STAGE 2
-        # ----------------------------------------------------
 
         final_candidates = []
         total_stage1 = len(stage1_hits)
@@ -233,19 +199,11 @@ class CMBDetectionPipeline:
                 fraction = start / max(total_stage1, 1)
                 progress_callback(0.50 + fraction * 0.50)
 
-        # ----------------------------------------------------
-        # NMS
-        # ----------------------------------------------------
-
         if final_candidates:
             centers, probs = zip(*final_candidates)
             kept_centers, kept_probs = self._apply_nms(list(centers), list(probs), NMS_DISTANCE)
         else:
             kept_centers, kept_probs = [], []
-
-        # ----------------------------------------------------
-        # FORMAT RESULTS
-        # ----------------------------------------------------
 
         detections = []
 
@@ -270,10 +228,6 @@ class CMBDetectionPipeline:
 
         return detections
 
-    # ========================================================
-    # SEVERITY
-    # ========================================================
-
     def grade_severity(self, num_detections):
 
         if num_detections == 0:
@@ -284,10 +238,6 @@ class CMBDetectionPipeline:
             return "Moderate"
         else:
             return "Severe"
-
-    # ========================================================
-    # GRAD-CAM (per detection, on demand)
-    # ========================================================
 
     def generate_gradcam_for_detection(self, volume, center):
         """
