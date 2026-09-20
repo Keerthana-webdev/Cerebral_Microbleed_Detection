@@ -697,19 +697,14 @@ with st.sidebar:
         </div>
 
         <div class="user-card">
-            <div class="avatar">HV</div>
+            <div class="avatar">KS</div>
             <div>
-                <div class="user-name">Capstone Team</div>
-                <div class="user-role">Research prototype</div>
+                <div class="user-name">Keerthana S</div>
+                <div class="user-role">Capstone Team</div>
             </div>
         </div>
         """
     )
-
-
-# ============================================================
-# TOP BAR
-# ============================================================
 
 render_html(
     """
@@ -722,11 +717,6 @@ render_html(
     </div>
     """
 )
-
-
-# ============================================================
-# HERO
-# ============================================================
 
 render_html(
     """
@@ -747,11 +737,6 @@ render_html(
     """
 )
 
-
-# ============================================================
-# UPLOAD
-# ============================================================
-
 st.markdown(
     "<div style='height:22px'></div>",
     unsafe_allow_html=True
@@ -762,11 +747,6 @@ uploaded_file = st.file_uploader(
     type=["gz"],
     help="Upload a T2S/SWI NIfTI scan."
 )
-
-
-# ============================================================
-# ACTION BUTTONS
-# ============================================================
 
 button1, button2, empty = st.columns(
     [1.2, 1.2, 4]
@@ -787,11 +767,6 @@ with button2:
         "⇩ Export report",
         use_container_width=True
     )
-
-
-# ============================================================
-# ANALYSIS
-# ============================================================
 
 if uploaded_file is not None:
 
