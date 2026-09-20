@@ -1775,11 +1775,6 @@ def create_pdf_report():
 
     return buffer.getvalue()
 
-
-# ============================================================
-# EXPORT REPORT
-# ============================================================
-
 if export_report:
 
     pdf_data = create_pdf_report()
