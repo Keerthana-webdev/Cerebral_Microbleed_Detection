@@ -1,80 +1,23 @@
-"""
-CMB Detection Project
-Final Unified Pipeline (v2)
-
-Raw SWI
-   ↓
-N4 Bias Correction
-   ↓
-Resampling
-   ↓
-Percentile Clipping
-   ↓
-Z-score Normalization
-   ↓
-Stage-1 Candidate Detector (v2 — retrained with whole-volume hard negatives)
-   ↓
-Stage-2 Mimic-Aware Classifier
-   ↓
-NMS
-   ↓
-Confidence
-   ↓
-Severity
-   ↓
-Grad-CAM (on demand, per detection)
-"""
-
 import sys
 from pathlib import Path
-
 import numpy as np
 import SimpleITK as sitk
 import torch
 
-
-# ============================================================
-# PROJECT PATHS
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
 MODEL_DIR = PROJECT_ROOT / "models"
-
-# CHANGED: use the retrained v2 candidate detector (Lesson 17)
 STAGE1_MODEL_PATH = MODEL_DIR / "candidate_detector_v2_best.pt"
-
 STAGE2_MODEL_PATH = MODEL_DIR / "mimic_classifier_best.pt"
-
-
-# ============================================================
-# IMPORT EXISTING CNN
-# ============================================================
 
 sys.path.append(str(PROJECT_ROOT / "src" / "candidate_detector"))
 
 from model import SimpleCNN3D
-
-
-# ============================================================
-# DEVICE
-# ============================================================
-
 DEVICE = torch.device("cpu")
-
-
-# ============================================================
-# PIPELINE PARAMETERS (final, frozen operating point)
-# ============================================================
-
 PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
-
-# CHANGED: matches the best v2 sweep point from Lesson 17d
 STAGE1_THRESHOLD = 0.60
 STAGE2_THRESHOLD = 0.70
 NMS_DISTANCE = 20
-
 TARGET_SPACING = (1.0, 1.0, 1.0)
 
 
