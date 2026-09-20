@@ -1,27 +1,27 @@
 {
   "model_version": "v3",
   "operating_point": {
-    "stage1_threshold": 0.7,
-    "stage2_threshold": 0.5,
-    "nms_distance": 20
+    "stage1_threshold": 0.8,
+    "stage2_threshold": 0.8,
+    "nms_distance": 25
   },
   "patch_level": {
-    "tp": 54,
+    "tp": 51,
     "fp": 0,
     "tn": 330,
-    "fn": 4,
+    "fn": 7,
     "precision": 1.0,
-    "recall": 0.931,
+    "recall": 0.879,
     "specificity": 1.0,
-    "accuracy": 0.99,
-    "f1_score": 0.964
+    "accuracy": 0.982,
+    "f1_score": 0.936
   },
   "whole_scan_level": {
-    "sensitivity": 0.121,
-    "precision": 0.019,
-    "fp_per_scan": 33.18,
-    "total_tp": 7,
-    "total_fp": 365,
-    "total_fn": 51
+    "sensitivity": 0.086,
+    "precision": 0.027,
+    "fp_per_scan": 16.36,
+    "total_tp": 5,
+    "total_fp": 180,
+    "total_fn": 53
   }
 }
