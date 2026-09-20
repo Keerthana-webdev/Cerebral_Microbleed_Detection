@@ -20,37 +20,14 @@ STAGE2_THRESHOLD = 0.70
 NMS_DISTANCE = 20
 TARGET_SPACING = (1.0, 1.0, 1.0)
 
-
-# ============================================================
-# MAIN CLASS
-# ============================================================
-
 class CMBDetectionPipeline:
 
     def __init__(self):
-
-        # ----------------------------------------------------
-        # Stage 1 (v2)
-        # ----------------------------------------------------
-
         self.stage1_model = SimpleCNN3D().to(DEVICE)
-
-        self.stage1_model.load_state_dict(
-            torch.load(STAGE1_MODEL_PATH, map_location=DEVICE)
-        )
-
+        self.stage1_model.load_state_dict(torch.load(STAGE1_MODEL_PATH, map_location=DEVICE))
         self.stage1_model.eval()
-
-        # ----------------------------------------------------
-        # Stage 2
-        # ----------------------------------------------------
-
         self.stage2_model = SimpleCNN3D().to(DEVICE)
-
-        self.stage2_model.load_state_dict(
-            torch.load(STAGE2_MODEL_PATH, map_location=DEVICE)
-        )
-
+        self.stage2_model.load_state_dict( torch.load(STAGE2_MODEL_PATH, map_location=DEVICE))
         self.stage2_model.eval()
 
     # ========================================================
