@@ -279,7 +279,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     # ---- Team member profile card (edit TEAM_MEMBER_NAME / TEAM_ROLE below) ----
-    TEAM_MEMBER_NAME = "Keerthana S"
+    TEAM_MEMBER_NAME = "Harshitha V"
     TEAM_ROLE = "Capstone team"
     initials = "".join(w[0] for w in TEAM_MEMBER_NAME.split()[:2]).upper()
     st.markdown(f"""
