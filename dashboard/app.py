@@ -596,11 +596,6 @@ div.stButton > button:hover {
     padding: 25px 0;
 }
 
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
 @media (max-width: 1000px) {
 
     .metric-grid {
@@ -612,7 +607,6 @@ div.stButton > button:hover {
         font-size: 35px;
     }
 }
-
 </style>
 """
 
@@ -620,11 +614,6 @@ st.markdown(
     "<style>" + CSS + "</style>",
     unsafe_allow_html=True
 )
-
-
-# ============================================================
-# SESSION STATE
-# ============================================================
 
 if "results" not in st.session_state:
     st.session_state.results = None
@@ -641,11 +630,6 @@ if "selected_candidate" not in st.session_state:
 if "reviewed" not in st.session_state:
     st.session_state.reviewed = set()
 
-
-# ============================================================
-# LOAD MODEL
-# ============================================================
-
 @st.cache_resource
 def load_pipeline():
 
@@ -657,17 +641,9 @@ try:
     pipeline = load_pipeline()
 
 except Exception as error:
-
     st.error("Unable to load the CMB detection pipeline.")
-
     st.exception(error)
-
     st.stop()
-
-
-# ============================================================
-# SIDEBAR
-# ============================================================
 
 with st.sidebar:
 
