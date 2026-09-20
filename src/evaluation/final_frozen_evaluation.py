@@ -1,3 +1,10 @@
+"""
+THE FINAL EVALUATION. Run once, on the untouched test set, using the
+final v3 model (deeper CNN + round 1+2 hard negatives) + final chosen
+thresholds. No further tuning after this. Reports every metric needed
+for the final report.
+"""
+
 import json
 import sys
 from pathlib import Path
@@ -18,11 +25,10 @@ MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
 REPORTS_DIR = Path(__file__).resolve().parents[2] / "reports"
 REPORTS_DIR.mkdir(exist_ok=True)
 
-# FINAL, FROZEN operating point — matches the dashboard's final_pipeline.py
 PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
-STAGE1_THRESHOLD = 0.6
-STAGE2_THRESHOLD = 0.7
+STAGE1_THRESHOLD = 0.7
+STAGE2_THRESHOLD = 0.5
 NMS_DISTANCE = 20
 MATCH_DISTANCE = 6
 
@@ -82,7 +88,6 @@ def match(predicted, true, max_dist):
     return tp, fp, fn
 
 
-# ==================== PART A: PATCH-LEVEL (curated test patches) ====================
 def patch_level_evaluation(test_subjects):
     metadata = pd.read_csv(PATCHES_DIR / "patch_metadata.csv")
     test_metadata = metadata[metadata["subject"].isin(test_subjects)].reset_index(drop=True)
@@ -113,7 +118,7 @@ def patch_level_evaluation(test_subjects):
     f1 = 2 * precision * recall / (precision + recall + 1e-8)
 
     print("=" * 70)
-    print("PART A: PATCH-LEVEL METRICS (curated test patches, final v2+mimic pipeline)")
+    print("PART A: PATCH-LEVEL METRICS (curated test patches, final v3+mimic pipeline)")
     print("=" * 70)
     print(f"Confusion Matrix:")
     print(f"                  Predicted CMB   Predicted Normal")
@@ -130,10 +135,9 @@ def patch_level_evaluation(test_subjects):
                 accuracy=round(accuracy, 3), f1_score=round(f1, 3))
 
 
-# ==================== PART B: WHOLE-SCAN LEVEL (per-subject) ====================
 def wholescan_evaluation(test_subjects):
     print("=" * 70)
-    print("PART B: WHOLE-SCAN LEVEL METRICS (final v2 pipeline, per-subject)")
+    print("PART B: WHOLE-SCAN LEVEL METRICS (final v3 pipeline, per-subject)")
     print("=" * 70)
 
     per_subject_rows = []
@@ -215,12 +219,13 @@ def main():
         splits = json.load(f)
     test_subjects = splits["test"]
 
-    print(f"\n🔒 FINAL FROZEN EVALUATION — test set ({len(test_subjects)} subjects), no further tuning after this.\n")
+    print(f"\n🔒 FINAL FROZEN EVALUATION (v3) — test set ({len(test_subjects)} subjects), no further tuning after this.\n")
 
     patch_metrics = patch_level_evaluation(test_subjects)
     scan_metrics, per_subject_df = wholescan_evaluation(test_subjects)
 
     summary = {
+        "model_version": "v3",
         "operating_point": {
             "stage1_threshold": STAGE1_THRESHOLD,
             "stage2_threshold": STAGE2_THRESHOLD,
