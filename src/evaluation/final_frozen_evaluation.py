@@ -4,11 +4,9 @@ final v3 model (deeper CNN + round 1+2 hard negatives) + final chosen
 thresholds. No further tuning after this. Reports every metric needed
 for the final report.
 """
-
 import json
 import sys
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import torch
