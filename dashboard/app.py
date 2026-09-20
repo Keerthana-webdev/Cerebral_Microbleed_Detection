@@ -929,11 +929,6 @@ reviewed_count = len(
     st.session_state.reviewed
 )
 
-
-# ============================================================
-# SUMMARY CARDS
-# ============================================================
-
 render_html(
     f"""
     <div class="metric-grid">
