@@ -132,7 +132,6 @@ def patch_level_evaluation(test_subjects):
                 recall=round(recall, 3), specificity=round(specificity, 3),
                 accuracy=round(accuracy, 3), f1_score=round(f1, 3))
 
-
 def wholescan_evaluation(test_subjects):
     print("=" * 70)
     print("PART B: WHOLE-SCAN LEVEL METRICS (final v3 pipeline, per-subject)")
