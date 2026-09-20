@@ -21,11 +21,6 @@ from reportlab.platypus import (
 )
 from reportlab.lib.units import mm
 
-
-# ============================================================
-# PROJECT PATH
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 PIPELINE_PATH = PROJECT_ROOT / "src" / "pipeline"
@@ -35,17 +30,7 @@ sys.path.insert(
     str(PIPELINE_PATH)
 )
 
-
-# ============================================================
-# IMPORT YOUR EXISTING PIPELINE
-# ============================================================
-
 from final_pipeline import CMBDetectionPipeline
-
-
-# ============================================================
-# PAGE CONFIG
-# ============================================================
 
 st.set_page_config(
     page_title="CMB Review",
@@ -53,21 +38,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-
-# ============================================================
-# CRITICAL HTML FUNCTION
-# ============================================================
-#
-# This is the fix for your current problem.
-#
-# We remove line breaks and leading spaces before sending
-# HTML to Streamlit.
-#
-# Therefore Streamlit cannot interpret the HTML as a
-# Markdown code block.
-#
-# ============================================================
 
 def render_html(content):
 
@@ -82,14 +52,8 @@ def render_html(content):
         unsafe_allow_html=True
     )
 
-
-# ============================================================
-# CSS
-# ============================================================
-
 CSS = r"""
 <style>
-
 * {
     box-sizing: border-box;
 }
@@ -117,28 +81,15 @@ header {
     visibility: hidden;
 }
 
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
 section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        180deg,
-        #202744 0%,
-        #171c35 100%
+    background: linear-gradient( 180deg,   #202744 0%,  #171c35 100%
     );
-
     border-right: 1px solid rgba(255,255,255,0.08);
 }
 
 section[data-testid="stSidebar"] > div {
     padding: 20px 15px;
 }
-
-
-/* =========================================================
-   BRAND
-========================================================= */
 
 .brand {
     display: flex;
@@ -151,17 +102,12 @@ section[data-testid="stSidebar"] > div {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-
     background: #2bc5d9;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 25px;
-
-    box-shadow:
-        0 0 0 5px rgba(43,197,217,0.10);
+    box-shadow: 0 0 0 5px rgba(43,197,217,0.10);
 }
 
 .brand-title {
@@ -177,11 +123,6 @@ section[data-testid="stSidebar"] > div {
     margin-top: 4px;
 }
 
-
-/* =========================================================
-   DEMO CARD
-========================================================= */
-
 .demo-card {
     background: linear-gradient(
         135deg,
@@ -190,264 +131,161 @@ section[data-testid="stSidebar"] > div {
     );
 
     border: 1px solid rgba(255,255,255,0.08);
-
     border-radius: 18px;
-
     padding: 16px;
-
     margin-bottom: 27px;
 }
 
 .demo-label {
     color: #b8c0d2;
-
     font-size: 9px;
-
     letter-spacing: 1.5px;
-
     margin-bottom: 10px;
 }
 
 .demo-dot {
     display: inline-block;
-
     width: 7px;
     height: 7px;
-
     border-radius: 50%;
-
     background: #ef7556;
-
     margin-right: 7px;
 }
 
 .demo-title {
     color: white;
-
     font-size: 15px;
-
     font-weight: 700;
 }
 
 .demo-sub {
     color: #9da7c0;
-
     font-size: 10px;
-
     margin-top: 5px;
 }
 
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
 .nav-heading {
     color: #68728e;
-
     font-size: 9px;
-
     letter-spacing: 2px;
-
-    margin:
-        20px 0
-        9px 4px;
+    margin: 20px 0 9px 4px;
 }
 
 .nav-item {
     color: #b5bfd4;
-
     padding: 11px 12px;
-
     border-radius: 12px;
-
     margin-bottom: 4px;
-
     font-size: 13px;
 }
 
 .nav-item.active {
-    background:
-        linear-gradient(
-            90deg,
-            rgba(38,188,214,0.26),
-            rgba(38,188,214,0.07)
-        );
-
-    color: #36c9df;
-}
-
-
-/* =========================================================
-   SAFETY
-========================================================= */
+    background:linear-gradient(90deg, rgba(38,188,214,0.26), 
+    rgba(38,188,214,0.07)); color: #36c9df;
+} 
 
 .safety-box {
     margin-top: 140px;
-
-    border-top:
-        1px solid rgba(255,255,255,0.08);
-
+    border-top:1px solid rgba(255,255,255,0.08);
     padding-top: 18px;
 }
 
 .safety-title {
     color: #7f89a2;
-
     font-size: 9px;
-
     letter-spacing: 1.8px;
 }
 
 .safety-text {
     color: #8e98b1;
-
     font-size: 10px;
-
     line-height: 1.55;
-
     margin-top: 9px;
 }
 
 
-/* =========================================================
-   USER
-========================================================= */
-
 .user-card {
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
     background: #2a3353;
-
     border-radius: 15px;
-
     padding: 10px;
-
     margin-top: 20px;
 }
 
 .avatar {
     width: 38px;
     height: 38px;
-
     border-radius: 50%;
-
     background: #8b4d3e;
-
     color: #ffd7ce;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     font-size: 11px;
-
     font-weight: 700;
 }
 
 .user-name {
     color: white;
-
     font-size: 12px;
-
     font-weight: 600;
 }
 
 .user-role {
     color: #919bb6;
-
     font-size: 9px;
-
     margin-top: 3px;
 }
 
-
-/* =========================================================
-   TOP BAR
-========================================================= */
-
 .topbar {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    padding:
-        5px 0
-        17px 0;
-
+    padding:5px 0 17px 0;
     margin-bottom: 28px;
-
-    border-bottom:
-        1px solid #e2e3e1;
+    border-bottom:1px solid #e2e3e1;
 }
 
 .breadcrumb {
     color: #707985;
-
     font-size: 10px;
-
     letter-spacing: 1.6px;
 }
 
 .local-mode {
     color: #707984;
-
     font-size: 11px;
 }
 
 .local-dot {
     display: inline-block;
-
     width: 7px;
     height: 7px;
-
     border-radius: 50%;
-
     background: #4da982;
-
     margin-right: 6px;
 }
 
-
-/* =========================================================
-   HERO
-========================================================= */
-
 .eyebrow {
     color: #2e8998;
-
     font-size: 9px;
-
     letter-spacing: 2px;
-
     margin-bottom: 10px;
 }
 
 .eyebrow-dot {
     color: #ef7556;
-
     margin-right: 7px;
 }
 
 .hero-title {
     color: #1d273a;
-
     font-size: 43px;
-
     line-height: 1.04;
-
     font-weight: 700;
-
     letter-spacing: -1.5px;
-
     margin: 0;
 }
 
@@ -457,410 +295,249 @@ section[data-testid="stSidebar"] > div {
 
 .hero-subtitle {
     color: #747c86;
-
     font-size: 13px;
-
     line-height: 1.6;
-
     margin-top: 14px;
-
     max-width: 720px;
 }
 
-
-/* =========================================================
-   FILE UPLOADER
-========================================================= */
-
 [data-testid="stFileUploader"] {
     background: #ffffff;
-
-    border:
-        1px dashed #b7c0c7;
-
+    border: 1px dashed #b7c0c7;
     border-radius: 18px;
-
     padding: 12px;
 }
 
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
 div.stButton > button {
-    border:
-        1px solid #d9dbdc;
-
+    border: 1px solid #d9dbdc;
     background: #ffffff;
-
     color: #333b49;
-
     border-radius: 24px;
-
     min-height: 42px;
-
     font-weight: 600;
 }
 
 div.stButton > button:hover {
     border-color: #239db0;
-
     color: #18879a;
 }
 
-
-/* =========================================================
-   METRIC CARDS
-========================================================= */
-
 .metric-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
+    grid-template-columns:repeat(4, minmax(0, 1fr));
     gap: 14px;
-
     margin-top: 22px;
-
     margin-bottom: 18px;
 }
 
 .metric-card {
     background: #ffffff;
-
-    border:
-        1px solid #dedfdd;
-
+    border: 1px solid #dedfdd;
     border-radius: 17px;
-
     padding: 19px;
-
     min-height: 120px;
 }
 
 .metric-label {
     color: #7e858e;
-
     font-size: 8px;
-
     letter-spacing: 1.5px;
 }
 
 .metric-value {
     color: #202a3d;
-
     font-size: 28px;
-
     font-weight: 700;
-
     margin-top: 13px;
 }
 
 .metric-small {
     color: #8b9199;
-
     font-size: 9px;
-
     margin-top: 5px;
 }
 
-
-/* =========================================================
-   WARNING
-========================================================= */
-
 .warning {
     background: #fff0e9;
-
-    border:
-        1px solid #efd2c6;
-
+    border: 1px solid #efd2c6;
     border-radius: 18px;
-
     padding: 15px 18px;
-
-    margin:
-        10px 0
-        22px 0;
+    margin: 10px 0 22px 0;
 }
 
 .warning-title {
     color: #a85d47;
-
     font-size: 12px;
-
     font-weight: 700;
 }
 
 .warning-text {
     color: #8e7065;
-
     font-size: 10px;
-
     line-height: 1.5;
-
     margin-top: 5px;
 }
 
-
-/* =========================================================
-   CARDS
-========================================================= */
-
 .card {
     background: #ffffff;
-
-    border:
-        1px solid #dedfdd;
-
+    border: 1px solid #dedfdd;
     border-radius: 19px;
-
     padding: 19px;
-
     margin-bottom: 17px;
 }
 
 .kicker {
     color: #318997;
-
     font-size: 8px;
-
     letter-spacing: 2px;
-
     margin-bottom: 7px;
 }
 
 .card-title {
     color: #202a3c;
-
     font-size: 20px;
-
     font-weight: 700;
 }
 
-
-/* =========================================================
-   CANDIDATE
-========================================================= */
-
 .candidate-card {
     background: #ffffff;
-
-    border:
-        1px solid #e0e2e3;
-
+    border: 1px solid #e0e2e3;
     border-radius: 13px;
-
     padding: 15px;
-
-    margin:
-        7px 0;
+    margin: 7px 0;
 }
 
 .candidate-card.selected {
     background: #eff8f9;
-
     border-color: #a9d8df;
 }
 
 .candidate-id {
     color: #ef7556;
-
     font-size: 8px;
-
     letter-spacing: 1.3px;
 }
 
 .candidate-name {
     color: #263045;
-
     font-size: 14px;
-
     font-weight: 700;
-
     margin-top: 4px;
 }
 
 .candidate-type {
     color: #727a84;
-
     font-size: 10px;
-
     margin-top: 4px;
 }
 
 .candidate-confidence {
     color: #263045;
-
     font-size: 14px;
-
     font-weight: 700;
 }
 
 .progress {
     height: 5px;
-
     background: #e4e6e8;
-
     border-radius: 5px;
-
     overflow: hidden;
-
     margin-top: 9px;
 }
 
 .progress-fill {
     height: 100%;
-
     background: #e97051;
 }
 
-
-/* =========================================================
-   STATUS
-========================================================= */
-
 .status {
     display: inline-block;
-
-    padding:
-        5px 9px;
-
+    padding: 5px 9px;
     border-radius: 14px;
-
     font-size: 8px;
-
     letter-spacing: .4px;
 }
 
 .status-review {
     background: #fff0e8;
-
     color: #a45d48;
 }
 
 .status-reviewed {
     background: #e9f5ef;
-
     color: #4f8871;
 }
 
 .status-positive {
     background: #e8f6f7;
-
     color: #278596;
 }
 
-
-/* =========================================================
-   EVIDENCE
-========================================================= */
-
 .evidence-title {
     color: #202a3c;
-
     font-size: 22px;
-
     font-weight: 700;
 }
 
 .coordinates {
     color: #7e858e;
-
     font-size: 9px;
-
     margin-top: 6px;
-
     letter-spacing: 1px;
 }
 
 .evidence-stat-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-
     margin-top: 14px;
 }
 
 .evidence-stat {
     background: #f0f2f5;
-
     border-radius: 15px;
-
     padding: 15px;
 }
 
 .stat-label {
     color: #858c95;
-
     font-size: 8px;
-
     letter-spacing: 1px;
 }
 
 .stat-value {
     color: #222b3d;
-
     font-size: 25px;
-
     font-weight: 700;
-
     margin-top: 6px;
 }
 
-
-/* =========================================================
-   CLASSIFICATION
-========================================================= */
-
 .sub-label {
     color: #7b828a;
-
     font-size: 8px;
-
     letter-spacing: 1.5px;
-
-    margin:
-        18px 0
-        7px 0;
+    margin: 18px 0  7px 0;
 }
 
 .class-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
 }
 
 .class-option {
-    border:
-        1px solid #d8dbdd;
-
+    border: 1px solid #d8dbdd;
     border-radius: 13px;
-
     padding: 12px;
-
     text-align: center;
-
     color: #606873;
-
     font-size: 11px;
 }
 
 .class-option.active {
     background: #e9f6f7;
-
     border-color: #57acbb;
-
     color: #278696;
-
     font-weight: 700;
 }
 
