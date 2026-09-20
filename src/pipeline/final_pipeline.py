@@ -21,9 +21,9 @@ from model import SimpleCNN3D
 
 DEVICE = torch.device("cpu")= PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
-STAGE1_THRESHOLD = 0.70
-STAGE2_THRESHOLD = 0.70
-NMS_DISTANCE = 15
+STAGE1_THRESHOLD = 0.6   # CHANGED from 0.70 — matches v2's best sweep point
+STAGE2_THRESHOLD = 0.7
+NMS_DISTANCE = 20        # CHANGED from 15
 TARGET_SPACING = (
     1.0,
     1.0,
