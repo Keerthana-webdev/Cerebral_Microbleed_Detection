@@ -888,11 +888,6 @@ if st.session_state.results is None:
 
     st.stop()
 
-
-# ============================================================
-# GET RESULTS
-# ============================================================
-
 detections = st.session_state.results[
     "detections"
 ]
