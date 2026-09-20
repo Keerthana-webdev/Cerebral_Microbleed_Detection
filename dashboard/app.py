@@ -541,106 +541,59 @@ div.stButton > button:hover {
     font-weight: 700;
 }
 
-
-/* =========================================================
-   SEVERITY
-========================================================= */
-
 .severity-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
 }
 
 .severity-option {
-    border:
-        1px solid #d8dbdd;
-
+    border: 1px solid #d8dbdd;
     border-radius: 13px;
-
     padding: 11px;
-
     text-align: center;
-
     color: #606873;
-
     font-size: 10px;
 }
 
 .severity-option.active {
     background: #fff0e9;
-
     border-color: #efb9a8;
-
     color: #b65e47;
-
     font-weight: 700;
 }
 
-
-/* =========================================================
-   EXPLAINABILITY
-========================================================= */
-
 .explain {
-    border-top:
-        1px solid #e1e2e2;
-
+    border-top: 1px solid #e1e2e2;
     margin-top: 18px;
-
     padding-top: 14px;
 }
 
 .explain-title {
     color: #3a414e;
-
     font-size: 11px;
-
     font-weight: 700;
 }
 
 .explain-text {
     color: #7d848d;
-
     font-size: 10px;
-
     line-height: 1.5;
-
     margin-top: 6px;
 }
 
-
-/* =========================================================
-   VIEWER
-========================================================= */
-
 .viewer-title {
     color: #293245;
-
     font-size: 15px;
-
     font-weight: 700;
-
     margin-bottom: 12px;
 }
 
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
 .footer {
     color: #858b93;
-
     text-align: center;
-
     font-size: 9px;
-
-    padding:
-        25px 0;
+    padding: 25px 0;
 }
 
 
