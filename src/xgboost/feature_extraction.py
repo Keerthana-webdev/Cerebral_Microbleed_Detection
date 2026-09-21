@@ -42,9 +42,6 @@ def extract_features(patch):
         np.ptp(flat),
     ]
 
-    # ---------------------------------------------------------
-    # 2. Percentile features
-    # ---------------------------------------------------------
     percentiles = [1, 5, 10, 25, 50, 75, 90, 95, 99]
 
     for p in percentiles:
