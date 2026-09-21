@@ -209,10 +209,6 @@ def main():
     for key, value in val_metrics.items():
         print(f"{key}: {value}")
 
-    # ---------------------------------------------------------
-    # Final TEST evaluation
-    # ---------------------------------------------------------
-
     test_prob = model.predict_proba(X_test)[:, 1]
 
     test_metrics = calculate_metrics(
