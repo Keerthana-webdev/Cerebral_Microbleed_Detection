@@ -313,11 +313,6 @@ def calculate_metrics(y_true, y_prob):
         "tp": int(tp)
     }
 
-
-# ============================================================
-# VALIDATION
-# ============================================================
-
 def evaluate(model, loader):
 
     model.eval()
