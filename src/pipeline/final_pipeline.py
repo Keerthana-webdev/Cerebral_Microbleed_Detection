@@ -14,7 +14,7 @@ sys.path.append(str(PROJECT_ROOT / "src" / "candidate_detector"))
 from model import SimpleCNN3D
 DEVICE = torch.device("cpu")
 PATCH_SIZE = (16, 16, 8)
-STRIDE = (8, 8, 4)
+STRIDE = (8,8,4)
 STAGE1_THRESHOLD = 0.60
 STAGE2_THRESHOLD = 0.70
 NMS_DISTANCE = 20
