@@ -142,10 +142,6 @@ def main():
         round(scale_pos_weight, 4)
     )
 
-    # ---------------------------------------------------------
-    # Create XGBoost model
-    # ---------------------------------------------------------
-
     model = xgb.XGBClassifier(
         n_estimators=500,
         max_depth=5,
