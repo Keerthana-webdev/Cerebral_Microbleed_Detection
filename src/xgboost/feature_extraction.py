@@ -90,9 +90,6 @@ def extract_features(patch):
         np.std(gz),
     ])
 
-    # ---------------------------------------------------------
-    # 6. Local variation
-    # ---------------------------------------------------------
     local_mean = ndimage.uniform_filter(patch, size=3)
     local_variation = np.abs(patch - local_mean)
 
