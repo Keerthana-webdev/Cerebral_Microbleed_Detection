@@ -128,10 +128,6 @@ def main():
     print("Train positives:", np.sum(y_train == 1))
     print("Train negatives:", np.sum(y_train == 0))
 
-    # ---------------------------------------------------------
-    # Handle class imbalance
-    # ---------------------------------------------------------
-
     positive_count = np.sum(y_train == 1)
     negative_count = np.sum(y_train == 0)
 
