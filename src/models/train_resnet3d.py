@@ -249,11 +249,6 @@ optimizer = torch.optim.Adam(
     lr=LEARNING_RATE
 )
 
-
-# ============================================================
-# METRIC FUNCTION
-# ============================================================
-
 def calculate_metrics(y_true, y_prob):
 
     y_pred = (y_prob >= 0.5).astype(int)
