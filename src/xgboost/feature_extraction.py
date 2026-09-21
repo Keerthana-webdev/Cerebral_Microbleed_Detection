@@ -78,9 +78,6 @@ def extract_features(patch):
         np.percentile(gradient_magnitude, 95),
     ])
 
-    # ---------------------------------------------------------
-    # 5. Gradient direction / axis statistics
-    # ---------------------------------------------------------
     features.extend([
         np.mean(np.abs(gx)),
         np.mean(np.abs(gy)),
