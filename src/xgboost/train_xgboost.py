@@ -190,11 +190,7 @@ def main():
     )
 
     print("\nTraining completed.")
-
-    # ---------------------------------------------------------
-    # Validation
-    # ---------------------------------------------------------
-
+    
     val_prob = model.predict_proba(X_val)[:, 1]
 
     val_threshold, val_metrics = find_best_threshold(
