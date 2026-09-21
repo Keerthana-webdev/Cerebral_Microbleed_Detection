@@ -1,0 +1,33 @@
+{
+    "model": "XGBoost",
+    "feature_count": 43,
+    "train_samples": 1674,
+    "validation_samples": 351,
+    "test_samples": 388,
+    "validation_metrics": {
+        "threshold": 0.5899999999999997,
+        "accuracy": 0.9715099715099715,
+        "precision": 0.7619047619047619,
+        "sensitivity_recall": 0.7619047619047619,
+        "specificity": 0.9848484848484849,
+        "f1": 0.7619047619047619,
+        "roc_auc": 0.981096681096681,
+        "tn": 325,
+        "fp": 5,
+        "fn": 5,
+        "tp": 16
+    },
+    "test_metrics": {
+        "threshold": 0.5899999999999997,
+        "accuracy": 0.9484536082474226,
+        "precision": 0.8958333333333334,
+        "sensitivity_recall": 0.7413793103448276,
+        "specificity": 0.9848484848484849,
+        "f1": 0.8113207547169812,
+        "roc_auc": 0.9831765935214212,
+        "tn": 325,
+        "fp": 5,
+        "fn": 15,
+        "tp": 43
+    }
+}
