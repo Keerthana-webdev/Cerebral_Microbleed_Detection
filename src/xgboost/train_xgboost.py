@@ -262,10 +262,6 @@ def main():
         f"TP={test_metrics['tp']}"
     )
 
-    # ---------------------------------------------------------
-    # Save model
-    # ---------------------------------------------------------
-
     model_path = MODEL_DIR / "xgboost_cmb.json"
 
     model.save_model(model_path)
