@@ -103,12 +103,7 @@ class CMBPatchDataset(Dataset):
         )
 
         return patch, label
-
-
-# ============================================================
-# LOAD METADATA
-# ============================================================
-
+    
 print("\nLoading metadata...")
 
 metadata = pd.read_csv(METADATA_FILE)
