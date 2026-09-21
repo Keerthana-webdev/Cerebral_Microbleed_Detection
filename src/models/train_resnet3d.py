@@ -16,11 +16,6 @@ from sklearn.metrics import (
 
 from resnet3d_model import ResNet3D
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 PATCH_DIR = PROJECT_ROOT / "data" / "patches"
@@ -32,11 +27,6 @@ OUTPUT_DIR = PROJECT_ROOT / "outputs" / "resnet3d"
 
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# ============================================================
-# SETTINGS
-# ============================================================
 
 BATCH_SIZE = 32
 EPOCHS = 30
