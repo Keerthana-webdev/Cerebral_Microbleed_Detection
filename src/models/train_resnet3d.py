@@ -137,11 +137,6 @@ print("Train subjects:", len(train_subjects))
 print("Val subjects  :", len(val_subjects))
 print("Test subjects :", len(test_subjects))
 
-
-# ============================================================
-# CREATE PATCH SPLITS
-# ============================================================
-
 train_df = metadata[
     metadata["subject"].isin(train_subjects)
 ].copy()
