@@ -170,10 +170,6 @@ def main():
         n_jobs=-1,
     )
 
-    # ---------------------------------------------------------
-    # Train
-    # ---------------------------------------------------------
-
     print("\nTraining XGBoost...")
     print("-" * 70)
 
@@ -190,7 +186,7 @@ def main():
     )
 
     print("\nTraining completed.")
-    
+
     val_prob = model.predict_proba(X_val)[:, 1]
 
     val_threshold, val_metrics = find_best_threshold(
