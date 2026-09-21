@@ -104,9 +104,6 @@ def extract_features(patch):
         np.percentile(local_variation, 95),
     ])
 
-    # ---------------------------------------------------------
-    # 7. Simple threshold-based intensity proportions
-    # ---------------------------------------------------------
     mean_value = np.mean(flat)
     std_value = np.std(flat)
 
