@@ -63,7 +63,7 @@ class CMBPatchDataset(Dataset):
 
         row = self.df.iloc[index]
 
-        patch_path = PATCH_DIR / row["file"]
+        patch_path = PATCH_DIR / row["subject"] / row["file"]
 
         patch = np.load(patch_path).astype(np.float32)
 
