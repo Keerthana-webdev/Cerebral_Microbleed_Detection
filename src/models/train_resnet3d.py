@@ -160,11 +160,6 @@ print("Train:", len(train_df))
 print("Val  :", len(val_df))
 print("Test :", len(test_df))
 
-
-# ============================================================
-# CLASS DISTRIBUTION
-# ============================================================
-
 train_positive = int((train_df["label"] == 1).sum())
 train_negative = int((train_df["label"] == 0).sum())
 
