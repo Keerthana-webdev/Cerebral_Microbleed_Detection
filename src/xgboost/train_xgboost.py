@@ -273,10 +273,6 @@ def main():
     print("\nModel saved:")
     print(model_path)
 
-    # ---------------------------------------------------------
-    # Save predictions
-    # ---------------------------------------------------------
-
     test_predictions = (
         test_prob >= val_threshold
     ).astype(int)
