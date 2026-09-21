@@ -54,11 +54,6 @@ print("=" * 70)
 
 print("Device:", DEVICE)
 
-
-# ============================================================
-# REPRODUCIBILITY
-# ============================================================
-
 torch.manual_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
