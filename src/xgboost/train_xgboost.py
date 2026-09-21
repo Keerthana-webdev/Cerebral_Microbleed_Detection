@@ -106,10 +106,6 @@ def main():
     print("XGBOOST CMB CLASSIFIER")
     print("=" * 70)
 
-    # ---------------------------------------------------------
-    # Load extracted features
-    # ---------------------------------------------------------
-
     X_train = np.load(DATA_DIR / "train_X.npy")
     y_train = np.load(DATA_DIR / "train_y.npy")
 
