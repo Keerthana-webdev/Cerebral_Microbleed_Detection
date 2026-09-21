@@ -118,11 +118,6 @@ print("Total patches:", len(metadata))
 print("\nColumns:")
 print(metadata.columns.tolist())
 
-
-# ============================================================
-# LOAD SUBJECT SPLIT
-# ============================================================
-
 with open(SPLIT_FILE, "r") as f:
     splits = json.load(f)
 
