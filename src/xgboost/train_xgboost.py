@@ -298,10 +298,6 @@ def main():
     print("Predictions saved:")
     print(prediction_file)
 
-    # ---------------------------------------------------------
-    # Save report
-    # ---------------------------------------------------------
-
     report = {
         "model": "XGBoost",
         "feature_count": int(X_train.shape[1]),
