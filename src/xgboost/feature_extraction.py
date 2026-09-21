@@ -29,10 +29,6 @@ def extract_features(patch):
     patch = np.asarray(patch, dtype=np.float32)
 
     flat = patch.ravel()
-
-    # ---------------------------------------------------------
-    # 1. Basic intensity statistics
-    # ---------------------------------------------------------
     features = [
         np.min(flat),
         np.max(flat),
