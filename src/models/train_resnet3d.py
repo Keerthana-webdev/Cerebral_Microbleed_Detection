@@ -222,11 +222,6 @@ total_parameters = sum(
 
 print("\nTotal parameters:", total_parameters)
 
-
-# ============================================================
-# CLASS WEIGHTS
-# ============================================================
-
 # Give more importance to the minority CMB class.
 
 class_weights = torch.tensor(
