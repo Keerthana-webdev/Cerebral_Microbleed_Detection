@@ -24,7 +24,7 @@ REPORTS_DIR = Path(__file__).resolve().parents[2] / "reports"
 REPORTS_DIR.mkdir(exist_ok=True)
 
 PATCH_SIZE = (16, 16, 8)
-STRIDE = (8, 8, 4)
+STRIDE = (4, 4, 2)
 STAGE1_THRESHOLD = 0.8
 STAGE2_THRESHOLD = 0.8
 NMS_DISTANCE = 25
