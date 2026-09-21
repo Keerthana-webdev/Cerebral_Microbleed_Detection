@@ -138,9 +138,6 @@ def extract_features(patch):
         np.median(center_flat),
     ])
 
-    # ---------------------------------------------------------
-    # 9. Edge/variation ratio
-    # ---------------------------------------------------------
     nonzero_count = np.count_nonzero(patch)
     total_count = patch.size
 
