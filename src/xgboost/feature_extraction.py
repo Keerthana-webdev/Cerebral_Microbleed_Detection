@@ -120,9 +120,6 @@ def extract_features(patch):
     for threshold in thresholds:
         features.append(np.mean(flat > threshold))
 
-    # ---------------------------------------------------------
-    # 8. Spatial center features
-    # ---------------------------------------------------------
     z, y, x = patch.shape
 
     center_z = patch[z // 4: 3 * z // 4,
