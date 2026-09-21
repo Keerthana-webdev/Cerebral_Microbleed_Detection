@@ -65,11 +65,6 @@ np.random.seed(RANDOM_SEED)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(RANDOM_SEED)
 
-
-# ============================================================
-# DATASET
-# ============================================================
-
 class CMBPatchDataset(Dataset):
 
     def __init__(self, dataframe):
