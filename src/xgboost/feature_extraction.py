@@ -50,9 +50,6 @@ def extract_features(patch):
     for p in percentiles:
         features.append(np.percentile(flat, p))
 
-    # ---------------------------------------------------------
-    # 3. Energy / variance-related features
-    # ---------------------------------------------------------
     features.extend([
         np.mean(flat ** 2),
         np.sqrt(np.mean(flat ** 2)),
