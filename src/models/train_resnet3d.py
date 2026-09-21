@@ -172,11 +172,6 @@ print("\nTraining class distribution:")
 print("Positive:", train_positive)
 print("Negative:", train_negative)
 
-
-# ============================================================
-# DATA LOADERS
-# ============================================================
-
 train_dataset = CMBPatchDataset(train_df)
 val_dataset = CMBPatchDataset(val_df)
 test_dataset = CMBPatchDataset(test_df)
