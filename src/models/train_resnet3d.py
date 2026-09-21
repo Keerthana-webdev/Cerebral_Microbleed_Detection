@@ -473,11 +473,6 @@ for epoch in range(1, EPOCHS + 1):
             f"(Val F1 = {best_f1:.4f})"
         )
 
-
-# ============================================================
-# SAVE TRAINING HISTORY
-# ============================================================
-
 history_df = pd.DataFrame(history)
 
 history_file = (
