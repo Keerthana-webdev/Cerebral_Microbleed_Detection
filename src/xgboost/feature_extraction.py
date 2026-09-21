@@ -146,9 +146,6 @@ def extract_features(patch):
 
     features.append(nonzero_count / max(total_count, 1))
 
-    # ---------------------------------------------------------
-    # 10. Replace numerical problems
-    # ---------------------------------------------------------
     features = np.asarray(features, dtype=np.float32)
 
     features = np.nan_to_num(
