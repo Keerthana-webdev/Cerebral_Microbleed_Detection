@@ -59,9 +59,6 @@ def extract_features(patch):
         np.var(flat),
     ])
 
-    # ---------------------------------------------------------
-    # 4. Gradient features
-    # ---------------------------------------------------------
     gx, gy, gz = np.gradient(patch)
 
     gradient_magnitude = np.sqrt(
