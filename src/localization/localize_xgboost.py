@@ -616,16 +616,7 @@ def run_split(split_name, threshold):
 
     return summary
 
-
-# ============================================================
-# MAIN
-# ============================================================
-
 if __name__ == "__main__":
-
-    # First run validation.
-    # We will use validation to decide the whole-MRI threshold
-    # before touching the final test set.
 
     run_split(
         "val",
