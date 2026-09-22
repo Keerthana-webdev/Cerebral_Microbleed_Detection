@@ -17,7 +17,6 @@ from the original two-stage CNN localization pipeline.
 import json
 import sys
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import torch
