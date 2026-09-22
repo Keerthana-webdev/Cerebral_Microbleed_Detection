@@ -327,11 +327,6 @@ def process_split(split_name, subjects):
 
     return metadata_df
 
-
-# ================================================================
-# MAIN
-# ================================================================
-
 print("=" * 80)
 print("REAL CMB MASK PATCH GENERATION FOR 3D U-NET")
 print("=" * 80)
