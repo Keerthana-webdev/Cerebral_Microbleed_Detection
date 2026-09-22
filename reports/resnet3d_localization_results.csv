@@ -1,0 +1,12 @@
+subject,true_lesions,detections,true_positives,false_positives,false_negatives
+sub-102,1,198,1,197,0
+sub-103,6,152,3,149,3
+sub-310,1,200,0,200,1
+sub-201,0,110,0,110,0
+sub-203,0,115,0,115,0
+sub-207,10,86,1,85,9
+sub-218,29,136,1,135,28
+sub-221,11,131,2,129,9
+sub-225,0,92,0,92,0
+sub-104,0,178,0,178,0
+sub-204,0,92,0,92,0
