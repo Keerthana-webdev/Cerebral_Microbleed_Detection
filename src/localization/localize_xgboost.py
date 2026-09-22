@@ -17,10 +17,7 @@ This script:
 import json
 import sys
 from anyio import Path
-
-
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import nibabel as nib
@@ -526,6 +523,6 @@ def run_split(split_name, threshold):
 if __name__ == "__main__":
 
     run_split(
-        "val",
-        DEFAULT_THRESHOLD
-    )
+    "test",
+    0.90
+)
