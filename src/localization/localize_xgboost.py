@@ -26,11 +26,6 @@ import xgboost as xgb
 
 from src.xgboost.feature_extraction import extract_features
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 PREPROCESSED_DIR = PROJECT_ROOT / "data" / "preprocessed"
@@ -44,11 +39,6 @@ REPORT_DIR = PROJECT_ROOT / "reports"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-
-# ============================================================
-# SETTINGS
-# ============================================================
-
 PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
 
@@ -60,22 +50,12 @@ MATCH_DISTANCE = 6.0
 
 BATCH_SIZE = 512
 
-
-# ============================================================
-# LOAD SPLIT
-# ============================================================
-
 def load_subjects(split_name):
 
     with open(SPLIT_FILE, "r") as f:
         splits = json.load(f)
 
     return splits[split_name]
-
-
-# ============================================================
-# FIND SUBJECT FILES
-# ============================================================
 
 def find_subject_file(subject):
 
@@ -101,22 +81,12 @@ def find_subject_file(subject):
 
     return swi_file, mask_file
 
-
-# ============================================================
-# BACKGROUND FILTER
-# ============================================================
-
 def is_valid_patch(patch):
 
     patch_std = float(np.std(patch))
     patch_mean = float(np.mean(patch))
 
     return patch_std > 0.3 and patch_mean > -1.5
-
-
-# ============================================================
-# GENERATE SLIDING WINDOWS
-# ============================================================
 
 def generate_windows(volume):
 
@@ -152,11 +122,6 @@ def generate_windows(volume):
 
     return windows
 
-
-# ============================================================
-# NMS
-# ============================================================
-
 def non_max_suppression(detections, min_distance):
 
     if not detections:
@@ -191,11 +156,6 @@ def non_max_suppression(detections, min_distance):
 
     return selected
 
-
-# ============================================================
-# GROUND-TRUTH CENTROIDS
-# ============================================================
-
 def get_ground_truth_centroids(mask):
 
     binary_mask = mask > 0
@@ -229,11 +189,6 @@ def get_ground_truth_centroids(mask):
         centroids.append(tuple(centroid))
 
     return centroids
-
-
-# ============================================================
-# MATCH DETECTIONS TO GROUND TRUTH
-# ============================================================
 
 def match_detections(detections, gt_centroids):
 
@@ -288,11 +243,6 @@ def match_detections(detections, gt_centroids):
 
     return tp, fp, fn
 
-
-# ============================================================
-# PROCESS ONE SUBJECT
-# ============================================================
-
 def process_subject(model, subject, threshold):
 
     swi_file, mask_file = find_subject_file(subject)
@@ -326,10 +276,6 @@ def process_subject(model, subject, threshold):
             "fn": len(gt_centroids),
         }
 
-    # --------------------------------------------------------
-    # Feature extraction
-    # --------------------------------------------------------
-
     feature_list = []
     centers = []
 
@@ -344,10 +290,6 @@ def process_subject(model, subject, threshold):
 
     print("Feature matrix:", X.shape)
 
-    # --------------------------------------------------------
-    # Batch prediction
-    # --------------------------------------------------------
-
     probabilities = []
 
     for start in range(0, len(X), BATCH_SIZE):
@@ -361,10 +303,6 @@ def process_subject(model, subject, threshold):
         probabilities.extend(probs.tolist())
 
     probabilities = np.asarray(probabilities)
-
-    # --------------------------------------------------------
-    # Threshold
-    # --------------------------------------------------------
 
     detections = []
 
@@ -387,10 +325,6 @@ def process_subject(model, subject, threshold):
         f"{threshold:.2f}: {len(detections)}"
     )
 
-    # --------------------------------------------------------
-    # NMS
-    # --------------------------------------------------------
-
     detections = non_max_suppression(
         detections,
         NMS_DISTANCE
@@ -399,10 +333,6 @@ def process_subject(model, subject, threshold):
     print(
         f"Detections after NMS: {len(detections)}"
     )
-
-    # --------------------------------------------------------
-    # Matching
-    # --------------------------------------------------------
 
     tp, fp, fn = match_detections(
         detections,
@@ -444,11 +374,6 @@ def process_subject(model, subject, threshold):
         "precision": precision,
     }
 
-
-# ============================================================
-# RUN SPLIT
-# ============================================================
-
 def run_split(split_name, threshold):
 
     print()
@@ -463,10 +388,6 @@ def run_split(split_name, threshold):
     print("Stride:", STRIDE)
     print("NMS distance:", NMS_DISTANCE)
     print("Match distance:", MATCH_DISTANCE)
-
-    # --------------------------------------------------------
-    # Load model
-    # --------------------------------------------------------
 
     print()
     print("Loading XGBoost model...")
