@@ -92,11 +92,6 @@ class CMBPatchDataset(Dataset):
 
         return image, mask
 
-
-# ------------------------------------------------------------------
-# LOAD SPLITS
-# ------------------------------------------------------------------
-
 print("=" * 80)
 print("3D U-NET TRAINING")
 print("=" * 80)
