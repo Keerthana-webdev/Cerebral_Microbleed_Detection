@@ -119,11 +119,6 @@ def is_valid_patch(patch):
         and np.mean(patch) > -1.5
     )
 
-
-# ============================================================
-# HELPER: GENERATE WINDOWS
-# ============================================================
-
 def generate_windows(volume):
 
     pz, py, px = PATCH_SIZE
