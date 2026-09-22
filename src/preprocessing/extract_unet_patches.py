@@ -369,11 +369,6 @@ test_df = process_split(
     TEST_SUBJECTS
 )
 
-
-# ================================================================
-# FINAL SUMMARY
-# ================================================================
-
 print()
 print("=" * 80)
 print("REAL U-NET PATCH GENERATION COMPLETE")
