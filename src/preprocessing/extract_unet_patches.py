@@ -18,11 +18,6 @@ OUTPUT_DIR = PROJECT_ROOT / "data" / "unet_patches"
 
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-
-# ================================================================
-# PATCH SETTINGS
-# ================================================================
-
 PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
 
