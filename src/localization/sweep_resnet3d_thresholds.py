@@ -368,11 +368,6 @@ def get_ground_truth_centers(mask):
 
     return centers
 
-
-# ============================================================
-# NMS
-# ============================================================
-
 def apply_nms(
     detections,
     min_distance
