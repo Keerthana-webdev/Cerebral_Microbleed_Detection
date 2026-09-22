@@ -214,12 +214,6 @@ class DenseNet3D(nn.Module):
 
         channels3 = self.block3.out_channels
 
-        # 48 + 3*8 = 72
-
-        # ----------------------------------------------------
-        # Final classification
-        # ----------------------------------------------------
-
         self.norm = nn.BatchNorm3d(
             channels3
         )
