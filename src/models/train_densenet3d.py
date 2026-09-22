@@ -70,10 +70,6 @@ print("Test :", len(test_df))
 train_loader = DataLoader(CMBPatchDataset(train_df), batch_size=32, shuffle=True)
 val_loader = DataLoader(CMBPatchDataset(val_df), batch_size=32)
 test_loader = DataLoader(CMBPatchDataset(test_df), batch_size=32)
-
-# -----------------------------
-# Model
-# -----------------------------
 model = DenseNet3D(num_classes=2).to(DEVICE)
 
 print("\nModel:")
