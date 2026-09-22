@@ -133,11 +133,6 @@ def extract_patch(volume, center):
 
     return patch
 
-
-# ============================================================
-# BACKGROUND FILTER
-# ============================================================
-
 def is_valid_patch(patch):
 
     patch_std = float(patch.std())
