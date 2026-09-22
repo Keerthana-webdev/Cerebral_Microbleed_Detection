@@ -24,7 +24,7 @@ import nibabel as nib
 from scipy import ndimage
 import xgboost as xgb
 
-from src.xgboost.feature_extraction import extract_features
+from xgboost.feature_extraction import extract_features
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
