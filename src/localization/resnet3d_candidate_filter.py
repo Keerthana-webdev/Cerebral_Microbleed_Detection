@@ -131,11 +131,6 @@ def distance(a, b):
         np.asarray(b, dtype=float)
     )
 
-
-# ============================================================
-# CANDIDATE SUPPORT FILTER
-# ============================================================
-
 def apply_support_filter(
     centers,
     probabilities,
