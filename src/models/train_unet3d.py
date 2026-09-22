@@ -149,11 +149,6 @@ print(f"Validation subjects: {len(val_subjects)}")
 print(f"Training patches: {len(train_df)}")
 print(f"Validation patches: {len(val_df)}")
 
-
-# ------------------------------------------------------------------
-# DATA LOADERS
-# ------------------------------------------------------------------
-
 train_dataset = CMBPatchDataset(
     train_df,
     PATCH_DIR
