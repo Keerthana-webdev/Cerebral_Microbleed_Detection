@@ -336,11 +336,6 @@ for subject in subjects:
 
     print("Prediction cache ready.")
 
-
-# ============================================================
-# THRESHOLD SWEEP
-# ============================================================
-
 results = []
 
 print()
