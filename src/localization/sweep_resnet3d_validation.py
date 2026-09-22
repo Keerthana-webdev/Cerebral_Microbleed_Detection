@@ -186,11 +186,6 @@ def nms_detections(detections):
 
     return selected
 
-
-# ============================================================
-# GROUND TRUTH
-# ============================================================
-
 def get_ground_truth(mask):
 
     from scipy import ndimage
