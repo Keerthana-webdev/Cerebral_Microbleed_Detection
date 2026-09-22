@@ -173,11 +173,6 @@ def generate_windows(volume):
 
     return patches, centers
 
-
-# ============================================================
-# HELPER: GROUND TRUTH CENTROIDS
-# ============================================================
-
 def get_gt_centroids(mask):
 
     labeled, count = ndimage.label(
