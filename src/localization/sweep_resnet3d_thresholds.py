@@ -185,11 +185,6 @@ def cut_patch(
 
     return volume[slices]
 
-
-# ============================================================
-# BACKGROUND FILTER
-# ============================================================
-
 def get_candidate_centers(volume):
 
     all_centers = generate_grid_centers(
