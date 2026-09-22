@@ -72,11 +72,6 @@ BATCH_SIZE = 128
 
 DEVICE = torch.device("cpu")
 
-
-# ============================================================
-# LOAD SUBJECT SPLIT
-# ============================================================
-
 def load_subjects(split_name):
 
     with open(SPLIT_FILE, "r") as f:
