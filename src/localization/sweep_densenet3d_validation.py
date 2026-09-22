@@ -63,11 +63,6 @@ THRESHOLDS = [
 
 DEVICE = torch.device("cpu")
 
-
-# ============================================================
-# LOAD VALIDATION SUBJECTS
-# ============================================================
-
 with open(SPLIT_FILE, "r") as f:
     splits = json.load(f)
 
