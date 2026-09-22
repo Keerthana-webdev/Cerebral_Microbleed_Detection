@@ -228,11 +228,6 @@ def get_candidate_centers(volume):
 
     return candidate_centers
 
-
-# ============================================================
-# CACHE MODEL PREDICTIONS
-# ============================================================
-
 def cache_subject(
     subject_name
 ):
