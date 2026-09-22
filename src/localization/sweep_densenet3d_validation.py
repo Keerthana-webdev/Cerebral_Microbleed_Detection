@@ -278,11 +278,6 @@ def non_max_suppression(
 
     return selected
 
-
-# ============================================================
-# HELPER: MATCH
-# ============================================================
-
 def match_detections(
     detections,
     gt_centroids
