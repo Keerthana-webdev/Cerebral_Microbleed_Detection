@@ -148,11 +148,6 @@ def is_valid_patch(patch):
         and patch_mean > -1.5
     )
 
-
-# ============================================================
-# NMS
-# ============================================================
-
 def nms_detections(detections):
 
     if not detections:
