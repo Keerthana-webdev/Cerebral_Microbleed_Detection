@@ -40,11 +40,6 @@ sys.path.append(
 from config import PROCESSED_DATA_DIR, SPLITS_DIR
 from resnet3d_model import ResNet3D
 
-
-# ------------------------------------------------------------
-# SETTINGS
-# ------------------------------------------------------------
-
 DEVICE = torch.device("cpu")
 
 MODEL_PATH = (
