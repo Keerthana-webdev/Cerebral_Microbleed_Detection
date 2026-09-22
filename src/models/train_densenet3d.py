@@ -173,9 +173,6 @@ for epoch in range(30):
 
         print(f"  -> Best model saved (Val F1 = {f1:.4f})")
 
-# -----------------------------
-# Test
-# -----------------------------
 print("\n" + "=" * 70)
 print("LOADING BEST MODEL")
 print("=" * 70)
