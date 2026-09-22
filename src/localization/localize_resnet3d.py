@@ -329,11 +329,6 @@ def apply_nms(
 
     return kept
 
-
-# ------------------------------------------------------------
-# GROUND-TRUTH CENTERS
-# ------------------------------------------------------------
-
 def get_ground_truth_centers(
     mask
 ):
