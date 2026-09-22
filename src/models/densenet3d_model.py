@@ -202,10 +202,6 @@ class DenseNet3D(nn.Module):
             48
         )
 
-        # ----------------------------------------------------
-        # Dense Block 3
-        # ----------------------------------------------------
-
         self.block3 = DenseBlock3D(
             in_channels=48,
             num_layers=3,
