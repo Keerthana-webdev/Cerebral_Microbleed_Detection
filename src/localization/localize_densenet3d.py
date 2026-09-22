@@ -568,10 +568,6 @@ def process_subject(
         len(detections)
     )
 
-    # --------------------------------------------------------
-    # Matching
-    # --------------------------------------------------------
-
     tp, fp, fn = (
         match_detections(
             detections,
