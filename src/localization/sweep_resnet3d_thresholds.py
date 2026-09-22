@@ -30,11 +30,6 @@ sys.path.append(
 from config import PROCESSED_DATA_DIR, SPLITS_DIR
 from resnet3d_model import ResNet3D
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 MODEL_PATH = (
