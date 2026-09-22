@@ -54,11 +54,6 @@ THRESHOLDS = [
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
-# ============================================================
-# MODEL
-# ============================================================
-
 def load_model():
 
     model = ResNet3D(
@@ -80,11 +75,6 @@ def load_model():
     model.eval()
 
     return model
-
-
-# ============================================================
-# GRID GENERATION
-# ============================================================
 
 def generate_grid_centers(volume_shape):
 
