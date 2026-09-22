@@ -144,10 +144,6 @@ class DenseNet3D(nn.Module):
     ):
         super().__init__()
 
-        # ----------------------------------------------------
-        # Initial convolution
-        # ----------------------------------------------------
-
         self.stem = nn.Sequential(
 
             nn.Conv3d(
