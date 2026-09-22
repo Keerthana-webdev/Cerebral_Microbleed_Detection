@@ -216,11 +216,6 @@ def get_ground_truth(mask):
 
     return centers
 
-
-# ============================================================
-# MATCHING
-# ============================================================
-
 def match_detections(detections, gt_centers):
 
     matched_gt = set()
