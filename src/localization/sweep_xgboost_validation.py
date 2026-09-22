@@ -52,11 +52,6 @@ THRESHOLDS = [
 
 BATCH_SIZE = 512
 
-
-# ============================================================
-# LOAD VALIDATION SUBJECTS
-# ============================================================
-
 with open(SPLIT_FILE, "r") as f:
     splits = json.load(f)
 
