@@ -518,10 +518,6 @@ def run_split(split_name, threshold):
         index=False
     )
 
-    # --------------------------------------------------------
-    # Overall metrics
-    # --------------------------------------------------------
-
     total_tp = int(df["tp"].sum())
     total_fp = int(df["fp"].sum())
     total_fn = int(df["fn"].sum())
