@@ -414,11 +414,6 @@ for epoch in range(1, EPOCHS + 1):
             f"(Val Dice: {val_dice:.4f})"
         )
 
-
-# ------------------------------------------------------------------
-# SAVE RESULTS
-# ------------------------------------------------------------------
-
 results = {
     "algorithm": "3D U-Net",
     "device": str(DEVICE),
