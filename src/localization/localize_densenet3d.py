@@ -45,7 +45,7 @@ STRIDE = (8, 8, 4)
 
 # Initial baseline threshold.
 # We will tune this on validation later.
-THRESHOLD = 0.50
+THRESHOLD = 0.90
 NMS_DISTANCE = 15.0
 MATCH_DISTANCE = 6.0
 BATCH_SIZE = 128
