@@ -224,11 +224,6 @@ def get_gt_centroids(mask):
 
     return centroids
 
-
-# ============================================================
-# HELPER: NMS
-# ============================================================
-
 def non_max_suppression(
     detections
 ):
