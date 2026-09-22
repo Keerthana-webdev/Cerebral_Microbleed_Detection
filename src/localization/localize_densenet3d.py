@@ -104,11 +104,6 @@ def is_valid_patch(patch):
         and patch_mean > -1.5
     )
 
-
-# ============================================================
-# SLIDING WINDOWS
-# ============================================================
-
 def generate_windows(volume):
 
     z_dim, y_dim, x_dim = volume.shape
