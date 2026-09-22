@@ -13,11 +13,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.models.densenet3d_model import DenseNet3D
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
 PREPROCESSED_DIR = PROJECT_ROOT / "data" / "preprocessed"
 SPLIT_FILE = PROJECT_ROOT / "data" / "splits" / "splits.json"
 
