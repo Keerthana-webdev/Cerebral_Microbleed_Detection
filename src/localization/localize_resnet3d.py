@@ -71,11 +71,6 @@ NMS_MIN_DISTANCE = 15
 
 MATCH_DISTANCE = 6
 
-
-# ------------------------------------------------------------
-# LOAD MODEL
-# ------------------------------------------------------------
-
 print("=" * 70)
 print("3D RESNET WHOLE-MRI LOCALIZATION")
 print("=" * 70)
