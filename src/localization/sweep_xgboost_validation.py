@@ -265,11 +265,6 @@ def match(detections, gt_centroids):
 
     return tp, fp, fn
 
-
-# ============================================================
-# CACHE VALIDATION PREDICTIONS
-# ============================================================
-
 cache = {}
 
 for subject in subjects:
