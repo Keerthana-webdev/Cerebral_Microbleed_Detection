@@ -14,8 +14,11 @@ This script:
 7. Matches detections with ground-truth CMB locations
 8. Reports lesion sensitivity, FP/scan and precision
 """
-
 import json
+import sys
+from anyio import Path
+
+
 from pathlib import Path
 
 import numpy as np
@@ -24,7 +27,10 @@ import nibabel as nib
 from scipy import ndimage
 import xgboost as xgb
 
-from xgboost.feature_extraction import extract_features
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.xgboost.feature_extraction import extract_features
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
