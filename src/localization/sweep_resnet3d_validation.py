@@ -21,11 +21,6 @@ import torch
 
 from src.models.resnet3d_model import ResNet3D
 
-
-# ============================================================
-# CONFIG
-# ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 SPLIT_FILE = PROJECT_ROOT / "data" / "splits" / "splits.json"
