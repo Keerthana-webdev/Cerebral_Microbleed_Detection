@@ -98,11 +98,6 @@ model.eval()
 
 print("ResNet model loaded successfully.")
 
-
-# ------------------------------------------------------------
-# GRID GENERATION
-# ------------------------------------------------------------
-
 def generate_grid_centers(
     volume_shape,
     patch_size,
