@@ -143,11 +143,6 @@ def generate_grid_centers(
 
     return centers
 
-
-# ------------------------------------------------------------
-# PATCH EXTRACTION
-# ------------------------------------------------------------
-
 def cut_patch(
     volume,
     center,
