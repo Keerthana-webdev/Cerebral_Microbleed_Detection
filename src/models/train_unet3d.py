@@ -256,11 +256,6 @@ optimizer = torch.optim.Adam(
     lr=LEARNING_RATE
 )
 
-
-# ------------------------------------------------------------------
-# VALIDATION
-# ------------------------------------------------------------------
-
 def calculate_dice(logits, targets):
 
     probabilities = torch.sigmoid(logits)
