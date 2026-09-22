@@ -81,11 +81,6 @@ print("=" * 80)
 print("Validation subjects:", len(subjects))
 print("Thresholds:", THRESHOLDS)
 
-
-# ============================================================
-# LOAD MODEL
-# ============================================================
-
 print()
 print("Loading DenseNet3D model...")
 
