@@ -286,11 +286,6 @@ def run_sliding_window(
 
     return detections
 
-
-# ------------------------------------------------------------
-# NMS
-# ------------------------------------------------------------
-
 def apply_nms(
     detections,
     min_distance
