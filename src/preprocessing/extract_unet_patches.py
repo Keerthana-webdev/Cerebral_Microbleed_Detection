@@ -193,11 +193,6 @@ def extract_patches_for_subject(subject):
 
     return all_patches
 
-
-# ================================================================
-# PROCESS SPLIT
-# ================================================================
-
 def process_split(split_name, subjects):
 
     split_dir = OUTPUT_DIR / split_name
