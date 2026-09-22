@@ -377,11 +377,6 @@ def load_model():
 
     return model
 
-
-# ============================================================
-# PREDICT PATCH PROBABILITIES
-# ============================================================
-
 def predict_patches(
     model,
     patches
