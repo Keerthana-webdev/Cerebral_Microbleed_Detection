@@ -160,11 +160,6 @@ def generate_windows(volume):
 
     return patches, centers
 
-
-# ============================================================
-# GROUND-TRUTH CENTROIDS
-# ============================================================
-
 def get_ground_truth_centroids(mask):
 
     binary_mask = mask > 0
