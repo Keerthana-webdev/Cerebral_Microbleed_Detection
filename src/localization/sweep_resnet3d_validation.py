@@ -264,11 +264,6 @@ def match_detections(detections, gt_centers):
 
     return tp, fp, fn
 
-
-# ============================================================
-# CACHE ONE SUBJECT
-# ============================================================
-
 def cache_subject(model, subject):
 
     swi_path = (
