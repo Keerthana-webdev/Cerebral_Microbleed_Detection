@@ -114,11 +114,6 @@ def generate_grid_centers(volume_shape):
 
     return centers
 
-
-# ============================================================
-# PATCH EXTRACTION
-# ============================================================
-
 def extract_patch(volume, center):
 
     half = tuple(x // 2 for x in PATCH_SIZE)
