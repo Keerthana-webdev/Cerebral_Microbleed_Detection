@@ -462,11 +462,6 @@ def match_detections(
 
     return tp, fp, fn
 
-
-# ============================================================
-# EVALUATE THRESHOLD
-# ============================================================
-
 def evaluate_threshold(
     subject_names,
     threshold
