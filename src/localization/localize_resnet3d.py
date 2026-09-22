@@ -489,10 +489,6 @@ def main():
             volume.shape
         )
 
-        # ----------------------------------------------------
-        # Sliding-window inference
-        # ----------------------------------------------------
-
         raw_detections = run_sliding_window(
             volume
         )
