@@ -114,11 +114,6 @@ model.eval()
 
 print("Model loaded successfully.")
 
-
-# ============================================================
-# GRID
-# ============================================================
-
 def generate_grid_centers(
     volume_shape,
     patch_size,
