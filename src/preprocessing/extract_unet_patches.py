@@ -143,10 +143,6 @@ def extract_patches_for_subject(subject):
                         )
                     )
 
-    # ------------------------------------------------------------
-    # Limit number of patches
-    # ------------------------------------------------------------
-
     if len(positive_patches) > MAX_POSITIVE_PATCHES_PER_SUBJECT:
 
         rng = np.random.default_rng(42)
