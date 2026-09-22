@@ -84,11 +84,6 @@ def load_subjects(split_name):
 
     return splits[split_name]
 
-
-# ============================================================
-# BACKGROUND FILTER
-# ============================================================
-
 def is_valid_patch(patch):
 
     patch_std = float(
