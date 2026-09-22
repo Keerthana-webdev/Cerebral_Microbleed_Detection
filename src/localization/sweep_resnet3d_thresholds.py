@@ -332,11 +332,6 @@ def cache_subject(
         f"  Cached {len(centers)} predictions."
     )
 
-
-# ============================================================
-# GROUND TRUTH
-# ============================================================
-
 def get_ground_truth_centers(mask):
 
     from scipy import ndimage
