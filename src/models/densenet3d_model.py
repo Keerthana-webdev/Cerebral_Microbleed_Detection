@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-
 class DenseLayer3D(nn.Module):
     """
     One 3D DenseNet layer.
