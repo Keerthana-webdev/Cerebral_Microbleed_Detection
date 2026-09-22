@@ -222,10 +222,6 @@ def run_sliding_window(
         f" after background filtering"
     )
 
-    # --------------------------------------------------------
-    # ResNet prediction
-    # --------------------------------------------------------
-
     detections = []
 
     for i in range(
