@@ -24,11 +24,6 @@ MODEL_PATH = PROJECT_ROOT / "models" / "xgboost" / "xgboost_cmb.json"
 REPORT_DIR = PROJECT_ROOT / "reports"
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-
-# ============================================================
-# SETTINGS
-# ============================================================
-
 PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
 
