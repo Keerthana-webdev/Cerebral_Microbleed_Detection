@@ -367,11 +367,6 @@ def cache_subject(model, subject):
         f"  Cached {len(probabilities)} predictions."
     )
 
-
-# ============================================================
-# EVALUATE THRESHOLD
-# ============================================================
-
 def evaluate_threshold(subjects, threshold):
 
     total_tp = 0
