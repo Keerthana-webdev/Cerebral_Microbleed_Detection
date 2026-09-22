@@ -82,11 +82,6 @@ model.load_model(MODEL_PATH)
 
 print("Model loaded.")
 
-
-# ============================================================
-# HELPERS
-# ============================================================
-
 def is_valid_patch(patch):
 
     return (
