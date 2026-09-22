@@ -552,10 +552,6 @@ def process_subject(
         len(detections)
     )
 
-    # --------------------------------------------------------
-    # NMS
-    # --------------------------------------------------------
-
     detections = (
         non_max_suppression(
             detections,
