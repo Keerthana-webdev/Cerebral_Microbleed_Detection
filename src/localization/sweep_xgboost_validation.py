@@ -69,11 +69,6 @@ print("=" * 80)
 print("Validation subjects:", len(subjects))
 print("Thresholds:", THRESHOLDS)
 
-
-# ============================================================
-# LOAD MODEL
-# ============================================================
-
 print()
 print("Loading XGBoost model...")
 
