@@ -502,10 +502,6 @@ def run_split(split_name, threshold):
 
         results.append(result)
 
-    # --------------------------------------------------------
-    # DataFrame
-    # --------------------------------------------------------
-
     df = pd.DataFrame(results)
 
     output_csv = (
