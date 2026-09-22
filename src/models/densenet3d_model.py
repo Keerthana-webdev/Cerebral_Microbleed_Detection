@@ -183,10 +183,6 @@ class DenseNet3D(nn.Module):
             32
         )
 
-        # ----------------------------------------------------
-        # Dense Block 2
-        # ----------------------------------------------------
-
         self.block2 = DenseBlock3D(
             in_channels=32,
             num_layers=3,
@@ -194,8 +190,6 @@ class DenseNet3D(nn.Module):
         )
 
         channels2 = self.block2.out_channels
-
-        # 32 + 3*8 = 56
 
         self.transition2 = Transition3D(
             channels2,
