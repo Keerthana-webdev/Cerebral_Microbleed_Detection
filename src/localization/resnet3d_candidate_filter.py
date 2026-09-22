@@ -118,11 +118,6 @@ def get_ground_truth(mask):
 
     return centers
 
-
-# ============================================================
-# DISTANCE
-# ============================================================
-
 def distance(a, b):
 
     return np.linalg.norm(
