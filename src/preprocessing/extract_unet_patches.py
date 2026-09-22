@@ -31,11 +31,6 @@ MIN_POSITIVE_VOXELS = 1
 MAX_POSITIVE_PATCHES_PER_SUBJECT = 100
 MAX_NEGATIVE_PATCHES_PER_SUBJECT = 100
 
-
-# ================================================================
-# LOAD SPLITS
-# ================================================================
-
 with open(SPLIT_FILE, "r") as f:
     splits = json.load(f)
 
@@ -48,7 +43,6 @@ def get_subjects(split_name):
         value = value.get("subjects", [])
 
     return list(value)
-
 
 TRAIN_SUBJECTS = get_subjects("train")
 VAL_SUBJECTS = get_subjects("val")
