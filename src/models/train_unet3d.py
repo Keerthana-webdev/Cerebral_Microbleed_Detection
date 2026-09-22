@@ -8,10 +8,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
-# ------------------------------------------------------------------
-# PROJECT PATH
-# ------------------------------------------------------------------
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 PATCH_DIR = PROJECT_ROOT / "data" / "patches"
