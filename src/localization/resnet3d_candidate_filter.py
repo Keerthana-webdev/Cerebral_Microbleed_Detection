@@ -307,11 +307,6 @@ def match_detections(
 
     return tp, fp, fn
 
-
-# ============================================================
-# MAIN EVALUATION
-# ============================================================
-
 def evaluate(
     subjects,
     threshold,
