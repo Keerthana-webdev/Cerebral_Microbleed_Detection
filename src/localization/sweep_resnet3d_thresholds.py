@@ -593,10 +593,6 @@ def main():
         f"Test subjects: {len(test_subjects)}"
     )
 
-    # --------------------------------------------------------
-    # STEP 1: CACHE
-    # --------------------------------------------------------
-
     print()
     print("=" * 70)
     print("STEP 1 — CACHING RESNET PREDICTIONS")
