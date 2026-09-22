@@ -98,9 +98,6 @@ print("\n" + "=" * 70)
 print("STARTING TRAINING")
 print("=" * 70)
 
-# -----------------------------
-# Training
-# -----------------------------
 for epoch in range(30):
 
     model.train()
