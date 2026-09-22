@@ -392,10 +392,6 @@ for epoch in range(1, EPOCHS + 1):
         f"Val Dice: {val_dice:.4f}"
     )
 
-    # --------------------------------------------------------------
-    # SAVE BEST MODEL
-    # --------------------------------------------------------------
-
     if val_dice > best_val_dice:
 
         best_val_dice = val_dice
