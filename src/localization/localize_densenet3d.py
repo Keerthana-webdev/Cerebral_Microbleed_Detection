@@ -437,11 +437,6 @@ def predict_patches(
         dtype=np.float32
     )
 
-
-# ============================================================
-# PROCESS ONE SUBJECT
-# ============================================================
-
 def process_subject(
     model,
     subject
