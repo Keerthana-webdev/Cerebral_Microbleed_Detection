@@ -52,24 +52,14 @@ REPORT_DIR.mkdir(
 # ============================================================
 
 PATCH_SIZE = (16, 16, 8)
-
 STRIDE = (8, 8, 4)
 
 # Initial baseline threshold.
 # We will tune this on validation later.
 THRESHOLD = 0.50
-
 NMS_DISTANCE = 15.0
-
 MATCH_DISTANCE = 6.0
-
 BATCH_SIZE = 128
-
-
-# ============================================================
-# DEVICE
-# ============================================================
-
 DEVICE = torch.device("cpu")
 
 def load_subjects(split_name):
