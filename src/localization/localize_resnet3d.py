@@ -511,10 +511,6 @@ def main():
             f"{len(final_detections)} detections"
         )
 
-        # ----------------------------------------------------
-        # Ground truth
-        # ----------------------------------------------------
-
         true_centers = (
             get_ground_truth_centers(
                 mask
