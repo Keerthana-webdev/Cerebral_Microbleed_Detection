@@ -365,11 +365,6 @@ def get_ground_truth_centers(
 
     return centers
 
-
-# ------------------------------------------------------------
-# MATCHING
-# ------------------------------------------------------------
-
 def match_detections_to_ground_truth(
     predicted_centers,
     true_centers,
