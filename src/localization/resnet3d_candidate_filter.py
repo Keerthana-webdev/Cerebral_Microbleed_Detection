@@ -69,11 +69,6 @@ SUPPORT_COUNTS = [
 # Distance used to compare predictions against true CMB centroids.
 MATCH_DISTANCE = 6.0
 
-
-# ============================================================
-# LOAD VALIDATION SUBJECTS
-# ============================================================
-
 def load_validation_subjects():
 
     with open(
@@ -85,11 +80,6 @@ def load_validation_subjects():
         splits = json.load(f)
 
     return splits["val"]
-
-
-# ============================================================
-# GROUND TRUTH
-# ============================================================
 
 def get_ground_truth(mask):
 
