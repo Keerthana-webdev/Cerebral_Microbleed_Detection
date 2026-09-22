@@ -12,11 +12,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.xgboost.feature_extraction import extract_features
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
 PREPROCESSED_DIR = PROJECT_ROOT / "data" / "preprocessed"
 SPLIT_FILE = PROJECT_ROOT / "data" / "splits" / "splits.json"
 MODEL_PATH = PROJECT_ROOT / "models" / "xgboost" / "xgboost_cmb.json"
