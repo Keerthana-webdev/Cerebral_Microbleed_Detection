@@ -411,11 +411,6 @@ def apply_nms(
 
     return kept
 
-
-# ============================================================
-# MATCH
-# ============================================================
-
 def match_detections(
     predicted_centers,
     true_centers
