@@ -12,14 +12,8 @@ This helps reduce isolated false positives produced during whole-MRI scanning.
 
 import json
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
-
-
-# ============================================================
-# PATHS
-# ============================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
