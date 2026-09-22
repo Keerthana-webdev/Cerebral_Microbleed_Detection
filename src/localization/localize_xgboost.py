@@ -579,10 +579,6 @@ def run_split(split_name, threshold):
             indent=4
         )
 
-    # --------------------------------------------------------
-    # Print final
-    # --------------------------------------------------------
-
     print()
     print("=" * 80)
     print(f"XGBOOST WHOLE-MRI {split_name.upper()} RESULTS")
