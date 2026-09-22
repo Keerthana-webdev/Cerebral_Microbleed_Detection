@@ -107,11 +107,6 @@ model.eval()
 
 print("Model loaded successfully.")
 
-
-# ============================================================
-# HELPER: BACKGROUND FILTER
-# ============================================================
-
 def is_valid_patch(patch):
 
     return (
