@@ -488,10 +488,6 @@ def run_split(split_name, threshold):
 
     results = []
 
-    # --------------------------------------------------------
-    # Process subjects
-    # --------------------------------------------------------
-
     for subject in subjects:
 
         result = process_subject(
