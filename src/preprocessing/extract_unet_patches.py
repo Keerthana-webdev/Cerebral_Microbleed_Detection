@@ -54,11 +54,6 @@ TRAIN_SUBJECTS = get_subjects("train")
 VAL_SUBJECTS = get_subjects("val")
 TEST_SUBJECTS = get_subjects("test")
 
-
-# ================================================================
-# PATCH EXTRACTION
-# ================================================================
-
 def extract_patches_for_subject(subject):
 
     subject_dir = PREPROCESSED_DIR / subject
