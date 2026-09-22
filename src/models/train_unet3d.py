@@ -246,11 +246,6 @@ def combined_loss(logits, targets):
         + dice_loss(logits, targets)
     )
 
-
-# ------------------------------------------------------------------
-# OPTIMIZER
-# ------------------------------------------------------------------
-
 optimizer = torch.optim.Adam(
     model.parameters(),
     lr=LEARNING_RATE
