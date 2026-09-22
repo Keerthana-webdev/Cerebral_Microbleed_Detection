@@ -67,10 +67,6 @@ class CMBPatchDataset(Dataset):
 
         patch = np.load(patch_path).astype(np.float32)
 
-        # ----------------------------------------------------------
-        # Input
-        # ----------------------------------------------------------
-
         image = torch.from_numpy(patch).unsqueeze(0)
 
         # ----------------------------------------------------------
