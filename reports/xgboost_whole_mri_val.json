@@ -1,0 +1,25 @@
+{
+    "algorithm": "XGBoost",
+    "split": "val",
+    "threshold": 0.59,
+    "patch_size": [
+        16,
+        16,
+        8
+    ],
+    "stride": [
+        8,
+        8,
+        4
+    ],
+    "nms_distance": 15.0,
+    "match_distance": 6.0,
+    "subjects": 11,
+    "true_lesions": 21,
+    "tp": 7,
+    "fp": 1181,
+    "fn": 14,
+    "lesion_sensitivity": 0.3333333333333333,
+    "detection_precision": 0.005892255892255892,
+    "false_positives_per_scan": 107.36363636363636
+}
