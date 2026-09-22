@@ -497,10 +497,6 @@ def main():
             volume
         )
 
-        # ----------------------------------------------------
-        # NMS
-        # ----------------------------------------------------
-
         final_detections = apply_nms(
             raw_detections,
             NMS_MIN_DISTANCE
