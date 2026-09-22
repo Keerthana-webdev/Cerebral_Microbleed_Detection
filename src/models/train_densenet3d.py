@@ -44,10 +44,6 @@ class CMBPatchDataset(Dataset):
         label = torch.tensor(int(row.label), dtype=torch.long)
         return patch, label
 
-
-# -----------------------------
-# Load metadata
-# -----------------------------
 print("=" * 70)
 print("3D DENSENET CMB CLASSIFIER")
 print("=" * 70)
