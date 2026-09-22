@@ -455,10 +455,6 @@ def main():
 
     all_results = []
 
-    # --------------------------------------------------------
-    # Process each test subject
-    # --------------------------------------------------------
-
     for subject_name in test_subjects:
 
         print()
