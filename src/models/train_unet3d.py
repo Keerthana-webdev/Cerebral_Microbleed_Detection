@@ -336,10 +336,6 @@ for epoch in range(1, EPOCHS + 1):
 
     train_loss /= len(train_loader.dataset)
 
-    # --------------------------------------------------------------
-    # VALIDATION
-    # --------------------------------------------------------------
-
     model.eval()
 
     val_loss = 0.0
