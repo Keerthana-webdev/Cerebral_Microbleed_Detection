@@ -52,7 +52,6 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def load_model():
 
     model = ResNet3D(
-        in_channels=1,
         num_classes=2
     )
 
