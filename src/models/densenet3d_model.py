@@ -164,10 +164,6 @@ class DenseNet3D(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-        # ----------------------------------------------------
-        # Dense Block 1
-        # ----------------------------------------------------
-
         self.block1 = DenseBlock3D(
             in_channels=16,
             num_layers=3,
