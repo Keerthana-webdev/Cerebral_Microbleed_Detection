@@ -213,11 +213,6 @@ def get_ground_truth_centroids(mask):
 
     return centroids
 
-
-# ============================================================
-# NON-MAXIMUM SUPPRESSION
-# ============================================================
-
 def non_max_suppression(
     detections,
     min_distance
