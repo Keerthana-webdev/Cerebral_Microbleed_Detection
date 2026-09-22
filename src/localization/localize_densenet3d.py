@@ -753,4 +753,4 @@ if __name__ == "__main__":
     # Start with validation.
     # Do NOT run the test set yet.
 
-    run_split("val")
+    run_split("test")
