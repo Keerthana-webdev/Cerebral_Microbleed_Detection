@@ -93,10 +93,6 @@ def extract_patches_for_subject(subject):
     positive_patches = []
     negative_patches = []
 
-    # ------------------------------------------------------------
-    # Sliding window
-    # ------------------------------------------------------------
-
     for z in range(0, z_size - pz + 1, STRIDE[0]):
 
         for y in range(0, y_size - py + 1, STRIDE[1]):
