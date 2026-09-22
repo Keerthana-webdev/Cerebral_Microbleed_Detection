@@ -203,11 +203,6 @@ def apply_support_filter(
 
     return detections
 
-
-# ============================================================
-# GREEDY NMS
-# ============================================================
-
 def apply_nms(
     detections,
     nms_distance=15.0
