@@ -477,10 +477,6 @@ def run_split(split_name, threshold):
 
     print("Model loaded successfully.")
 
-    # --------------------------------------------------------
-    # Subjects
-    # --------------------------------------------------------
-
     subjects = load_subjects(split_name)
 
     print()
