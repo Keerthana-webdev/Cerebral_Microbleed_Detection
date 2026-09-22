@@ -1,0 +1,25 @@
+{
+    "algorithm": "3D DenseNet",
+    "split": "test",
+    "threshold": 0.9,
+    "patch_size": [
+        16,
+        16,
+        8
+    ],
+    "stride": [
+        8,
+        8,
+        4
+    ],
+    "nms_distance": 15.0,
+    "match_distance": 6.0,
+    "subjects": 11,
+    "true_lesions": 58,
+    "tp": 5,
+    "fp": 801,
+    "fn": 53,
+    "lesion_sensitivity": 0.08620689655172414,
+    "detection_precision": 0.00620347394540943,
+    "false_positives_per_scan": 72.81818181818181
+}
