@@ -41,11 +41,6 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BEST_MODEL = MODEL_DIR / "unet3d_best.pt"
 RESULT_FILE = OUTPUT_DIR / "unet3d_results.json"
 
-
-# ------------------------------------------------------------------
-# DATASET
-# ------------------------------------------------------------------
-
 class CMBPatchDataset(Dataset):
 
     def __init__(self, metadata, patch_dir):
