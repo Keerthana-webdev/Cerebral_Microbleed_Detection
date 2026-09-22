@@ -175,11 +175,6 @@ def cut_patch(
 
     return volume[slices]
 
-
-# ------------------------------------------------------------
-# SLIDING-WINDOW RESNET
-# ------------------------------------------------------------
-
 def run_sliding_window(
     volume,
     batch_size=64
