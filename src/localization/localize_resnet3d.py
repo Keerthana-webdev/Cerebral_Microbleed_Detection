@@ -191,10 +191,6 @@ def run_sliding_window(
         STRIDE
     )
 
-    # --------------------------------------------------------
-    # Background filtering
-    # --------------------------------------------------------
-
     candidate_centers = []
 
     for center in all_centers:
