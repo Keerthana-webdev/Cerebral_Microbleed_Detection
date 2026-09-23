@@ -26,11 +26,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.models.unet3d_model import UNet3D
 
-
-# ================================================================
-# SETTINGS
-# ================================================================
-
 BATCH_SIZE = 16
 EPOCHS = 30
 LEARNING_RATE = 1e-3
