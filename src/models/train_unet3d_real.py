@@ -42,11 +42,6 @@ DEVICE = torch.device(
 BEST_MODEL = MODEL_DIR / "unet3d_real_best.pt"
 RESULT_FILE = OUTPUT_DIR / "unet3d_real_results.json"
 
-
-# ================================================================
-# DATASET
-# ================================================================
-
 class RealCMBPatchDataset(Dataset):
 
     def __init__(self, split):
