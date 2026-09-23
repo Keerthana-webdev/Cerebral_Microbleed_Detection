@@ -99,11 +99,6 @@ class RealCMBPatchDataset(Dataset):
 
         return image, mask
 
-
-# ================================================================
-# LOSS FUNCTIONS
-# ================================================================
-
 dice_smooth = 1e-6
 
 
