@@ -517,11 +517,6 @@ for epoch in range(
             f"(Dice: {val_dice:.4f})"
         )
 
-
-# ================================================================
-# LOAD BEST MODEL
-# ================================================================
-
 checkpoint = torch.load(
     BEST_MODEL,
     map_location=DEVICE
