@@ -301,11 +301,6 @@ print(
     f"Test patches:       {len(test_dataset)}"
 )
 
-
-# ================================================================
-# DATA LOADERS
-# ================================================================
-
 train_loader = DataLoader(
     train_dataset,
     batch_size=BATCH_SIZE,
