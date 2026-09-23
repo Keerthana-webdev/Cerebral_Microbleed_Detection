@@ -357,11 +357,6 @@ optimizer = torch.optim.Adam(
     lr=LEARNING_RATE
 )
 
-
-# ================================================================
-# VALIDATION FUNCTION
-# ================================================================
-
 def evaluate(model, loader):
 
     model.eval()
