@@ -205,16 +205,6 @@ def iou_score(logits, targets):
 
     return iou.mean().item()
 
-
-# ================================================================
-# COMBINED LOSS
-# ================================================================
-
-# Positive CMB voxels occupy only a small fraction of each patch.
-# BCE alone can therefore strongly favor background.
-#
-# We use a weighted BCE + Dice combination.
-
 def combined_loss(logits, targets):
 
     probabilities = torch.sigmoid(logits)
