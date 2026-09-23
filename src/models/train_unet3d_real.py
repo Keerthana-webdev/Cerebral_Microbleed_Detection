@@ -264,11 +264,6 @@ def combined_loss(logits, targets):
 
     return bce + dloss
 
-
-# ================================================================
-# LOAD DATA
-# ================================================================
-
 print("=" * 80)
 print("3D U-NET — REAL CMB MASK TRAINING")
 print("=" * 80)
