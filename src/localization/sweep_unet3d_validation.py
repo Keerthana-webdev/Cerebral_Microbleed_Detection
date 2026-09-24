@@ -630,11 +630,6 @@ with open(
         indent=4
     )
 
-
-# ================================================================
-# PRINT RESULTS
-# ================================================================
-
 print()
 print("=" * 80)
 print("U-NET VALIDATION THRESHOLD SWEEP RESULTS")
