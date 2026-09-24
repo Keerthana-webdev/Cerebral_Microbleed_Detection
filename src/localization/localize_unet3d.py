@@ -462,10 +462,6 @@ def process_subject(subject):
 
                         continue
 
-                    # ------------------------------------------------
-                    # Threshold segmentation mask
-                    # ------------------------------------------------
-
                     binary_prediction = (
                         probabilities
                         >= THRESHOLD
