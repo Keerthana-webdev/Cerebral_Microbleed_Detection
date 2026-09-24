@@ -48,7 +48,7 @@ PATCH_SIZE = (16, 16, 8)
 STRIDE = (8, 8, 4)
 
 # Segmentation probability threshold
-THRESHOLD = 0.50
+THRESHOLD = 0.90
 
 # Minimum distance between detected candidates
 NMS_DISTANCE = 15.0
