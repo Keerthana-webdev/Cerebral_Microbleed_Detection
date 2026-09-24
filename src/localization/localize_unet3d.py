@@ -76,11 +76,6 @@ DEVICE = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
 
-
-# ================================================================
-# SUBJECT LIST
-# ================================================================
-
 SPLIT_FILE = (
     PROJECT_ROOT
     / "data"
