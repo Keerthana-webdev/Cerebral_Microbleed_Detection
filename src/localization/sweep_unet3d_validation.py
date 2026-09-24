@@ -223,11 +223,6 @@ def apply_nms(candidates, min_distance):
 
     return selected
 
-
-# ================================================================
-# MATCHING
-# ================================================================
-
 def match_detections(
     detections,
     ground_truth
