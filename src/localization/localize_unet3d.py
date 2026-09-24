@@ -1,15 +1,9 @@
 import sys
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import torch
 from scipy import ndimage
-
-
-# ================================================================
-# PROJECT PATH
-# ================================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
