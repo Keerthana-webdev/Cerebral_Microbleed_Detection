@@ -175,11 +175,6 @@ def get_ground_truth_centroids(mask):
 
     return centroids
 
-
-# ================================================================
-# NMS
-# ================================================================
-
 def apply_nms(candidates, min_distance):
 
     if not candidates:
