@@ -1,7 +1,7 @@
 {
     "algorithm": "3D U-Net",
     "split": "test",
-    "threshold": 0.5,
+    "threshold": 0.9,
     "patch_size": [
         16,
         16,
@@ -17,9 +17,9 @@
     "subjects": 11,
     "true_lesions": 58,
     "tp": 24,
-    "fp": 1906,
+    "fp": 1399,
     "fn": 34,
     "lesion_sensitivity": 0.41379310344827586,
-    "detection_precision": 0.012435233160621761,
-    "false_positives_per_scan": 173.27272727272728
+    "detection_precision": 0.016865776528460996,
+    "false_positives_per_scan": 127.18181818181819
 }
