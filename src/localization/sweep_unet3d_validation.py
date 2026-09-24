@@ -58,11 +58,6 @@ DEVICE = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
 )
 
-
-# ================================================================
-# LOAD SUBJECTS
-# ================================================================
-
 with open(SPLIT_FILE, "r") as f:
     splits = json.load(f)
 
