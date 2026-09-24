@@ -582,10 +582,6 @@ def process_subject(subject):
         f"{len(detections)}"
     )
 
-    # ------------------------------------------------------------
-    # Match
-    # ------------------------------------------------------------
-
     tp, fp, fn = match_detections(
         detections,
         ground_truth,
