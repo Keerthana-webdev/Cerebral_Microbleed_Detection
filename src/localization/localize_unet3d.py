@@ -387,10 +387,6 @@ def process_subject(subject):
 
     valid_windows = 0
 
-    # ------------------------------------------------------------
-    # Sliding-window inference
-    # ------------------------------------------------------------
-
     with torch.no_grad():
 
         for z in range(
