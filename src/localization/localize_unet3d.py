@@ -331,11 +331,6 @@ def match_detections(
         false_negative
     )
 
-
-# ================================================================
-# WHOLE-MRI INFERENCE
-# ================================================================
-
 def process_subject(subject):
 
     print()
