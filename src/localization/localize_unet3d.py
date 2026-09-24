@@ -568,10 +568,6 @@ def process_subject(subject):
         f"{len(candidates)}"
     )
 
-    # ------------------------------------------------------------
-    # NMS
-    # ------------------------------------------------------------
-
     detections = apply_nms(
         candidates,
         NMS_DISTANCE
