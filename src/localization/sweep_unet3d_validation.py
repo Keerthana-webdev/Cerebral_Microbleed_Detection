@@ -124,11 +124,6 @@ model.eval()
 print("Model loaded successfully.")
 print(f"Validation subjects: {len(SUBJECTS)}")
 
-
-# ================================================================
-# GROUND TRUTH
-# ================================================================
-
 def get_ground_truth_centroids(mask):
 
     binary_mask = (
