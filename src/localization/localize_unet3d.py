@@ -259,11 +259,6 @@ def get_ground_truth_centroids(mask):
 
     return centroids
 
-
-# ================================================================
-# MATCH DETECTIONS TO GROUND TRUTH
-# ================================================================
-
 def match_detections(
     detections,
     ground_truth,
