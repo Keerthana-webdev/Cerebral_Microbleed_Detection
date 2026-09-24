@@ -12,11 +12,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.models.unet3d_model import UNet3D
 
-
-# ================================================================
-# PATHS
-# ================================================================
-
 PREPROCESSED_DIR = PROJECT_ROOT / "data" / "preprocessed"
 
 MODEL_PATH = (
