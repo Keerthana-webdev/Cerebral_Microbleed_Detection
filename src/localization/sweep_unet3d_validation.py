@@ -599,11 +599,6 @@ summary_df = pd.DataFrame(
     summary
 )
 
-
-# ================================================================
-# SAVE
-# ================================================================
-
 csv_path = (
     REPORT_DIR
     / "unet3d_whole_mri_validation_threshold_sweep.csv"
