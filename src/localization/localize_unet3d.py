@@ -205,11 +205,6 @@ def apply_nms(candidates, min_distance):
 
     return selected
 
-
-# ================================================================
-# GROUND-TRUTH CENTROIDS
-# ================================================================
-
 def get_ground_truth_centroids(mask):
 
     binary_mask = (
