@@ -289,11 +289,6 @@ def match_detections(
 
     return tp, fp, fn
 
-
-# ================================================================
-# RUN ONE SUBJECT
-# ================================================================
-
 def run_subject(subject):
 
     subject_dir = (
