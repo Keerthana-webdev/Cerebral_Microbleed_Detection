@@ -417,10 +417,6 @@ def process_subject(subject):
                         x:x + px
                     ]
 
-                    # ------------------------------------------------
-                    # Background rejection
-                    # ------------------------------------------------
-
                     if np.std(patch) <= 0.3:
 
                         continue
