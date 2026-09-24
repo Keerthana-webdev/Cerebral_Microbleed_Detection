@@ -533,11 +533,6 @@ for index, subject in enumerate(
 
         all_results.append(result)
 
-
-# ================================================================
-# AGGREGATE
-# ================================================================
-
 df = pd.DataFrame(all_results)
 
 summary = []
