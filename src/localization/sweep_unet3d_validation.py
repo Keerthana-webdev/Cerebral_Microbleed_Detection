@@ -507,11 +507,6 @@ def run_subject(subject):
 
     return subject_results
 
-
-# ================================================================
-# PROCESS VALIDATION SET
-# ================================================================
-
 all_results = []
 
 for index, subject in enumerate(
