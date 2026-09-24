@@ -79,11 +79,6 @@ def get_subjects(split_name):
 
 SUBJECTS = get_subjects(SPLIT)
 
-
-# ================================================================
-# LOAD MODEL
-# ================================================================
-
 print("=" * 80)
 print("3D U-NET VALIDATION THRESHOLD SWEEP")
 print("=" * 80)
