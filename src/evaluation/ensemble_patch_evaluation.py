@@ -35,15 +35,7 @@ cnn_model = DeeperCNN3D().to(DEVICE)
 cnn_model.load_state_dict(torch.load(MODELS_DIR / "candidate_detector_v3_best.pt", map_location=DEVICE))
 cnn_model.eval()
 
-resnet_model = ResNet3D(num_classes=2).to(DEVICE)
-resnet_checkpoint = torch.load(MODELS_DIR / "resnet3d" / "resnet3d_best.pt", map_location=DEVICE)
-resnet_model.load_state_dict(resnet_checkpoint if isinstance(resnet_checkpoint, dict) and "state_dict" not in resnet_checkpoint else resnet_checkpoint.get("state_dict", resnet_checkpoint))
-resnet_model.eval()
 
-densenet_model = DenseNet3D(num_classes=2).to(DEVICE)
-densenet_checkpoint = torch.load(MODELS_DIR / "densenet3d" / "densenet3d_best.pt", map_location=DEVICE)
-densenet_model.load_state_dict(densenet_checkpoint if isinstance(densenet_checkpoint, dict) and "state_dict" not in densenet_checkpoint else densenet_checkpoint.get("state_dict", densenet_checkpoint))
-densenet_model.eval()
 
 print("All three models loaded successfully.\n")
 
