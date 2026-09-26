@@ -63,24 +63,7 @@ def get_true_centers(mask):
     return [tuple(np.argwhere(labeled == i).mean(axis=0)) for i in range(1, n + 1) if (labeled == i).sum() >= 1]
 
 
-def detect_blob_candidates(volume):
-    """Physical prior: CMBs are dark, small, roundish blobs. Threshold + connected components."""
-    # Only consider brain tissue (ignore black background)
-    brain_mask = volume > (volume.min() + 0.1)
-    brain_voxels = volume[brain_mask]
 
-    dark_threshold = np.percentile(brain_voxels, DARK_PERCENTILE)
-    dark_mask = (volume <= dark_threshold) & brain_mask
-
-    labeled, num_blobs = ndimage.label(dark_mask)
-    candidates = []
-    for i in range(1, num_blobs + 1):
-        coords = np.argwhere(labeled == i)
-        size = len(coords)
-        if MIN_BLOB_VOXELS <= size <= MAX_BLOB_VOXELS:
-            center = tuple(coords.mean(axis=0).astype(int))
-            candidates.append(center)
-    return candidates
 
 
 def match_to_ground_truth(predicted, true, max_distance):
