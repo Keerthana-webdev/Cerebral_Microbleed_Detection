@@ -63,7 +63,33 @@ def get_true_centers(mask):
     return [tuple(np.argwhere(labeled == i).mean(axis=0)) for i in range(1, n + 1) if (labeled == i).sum() >= 1]
 
 
+def detect_blob_candidates(volume):
+    """Physical prior: CMBs are dark, small, roundish blobs. Threshold + connected components."""
+    brain_mask = volume > (volume.min() + 0.1)
+    brain_voxels = volume[brain_mask]
 
+    dark_threshold = np.percentile(brain_voxels, DARK_PERCENTILE)
+    dark_mask = (volume <= dark_threshold) & brain_mask
+
+    labeled, num_blobs = ndimage.label(dark_mask)
+    print(f"    (raw blobs before size filtering: {num_blobs})")
+
+    if num_blobs == 0:
+        return []
+
+    # Vectorized size computation - avoids looping with argwhere per blob
+    sizes = ndimage.sum(dark_mask, labeled, index=np.arange(1, num_blobs + 1))
+
+    valid_label_ids = np.where((sizes >= MIN_BLOB_VOXELS) & (sizes <= MAX_BLOB_VOXELS))[0] + 1
+
+    if len(valid_label_ids) == 0:
+        return []
+
+    # Vectorized centroid computation for only the valid blobs
+    centroids = ndimage.center_of_mass(dark_mask, labeled, valid_label_ids.tolist())
+
+    candidates = [tuple(int(round(v)) for v in c) for c in centroids]
+    return candidates
 
 
 def match_to_ground_truth(predicted, true, max_distance):
