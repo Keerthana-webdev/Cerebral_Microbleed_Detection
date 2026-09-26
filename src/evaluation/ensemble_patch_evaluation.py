@@ -146,5 +146,5 @@ print(f"3D DenseNet alone: Accuracy 96.39%, F1 88.71%")
 print(f"ENSEMBLE:          Accuracy {accuracy*100:.2f}%, F1 {f1*100:.2f}%")
 
 REPORTS_DIR = PROJECT_ROOT / "reports"
-df.to_csv(REPORTS_DIR / "ensemble_patch_predictions.csv", index=False)
+
 print(f"\nPer-patch predictions saved to: {REPORTS_DIR / 'ensemble_patch_predictions.csv'}")
