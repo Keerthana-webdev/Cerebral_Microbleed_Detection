@@ -34,13 +34,13 @@ NMS_DISTANCE = 15
 
 # ---- Load U-Net (candidate generator) ----
 unet_model = UNet3D(in_channels=1, out_channels=1).to(DEVICE)
-mimic_model.load_state_dict(torch.load(MODELS_DIR / "mimic_classifier_unet_matched_best.pt", map_location=DEVICE))
+unet_checkpoint = torch.load(MODELS_DIR / "unet3d" / "unet3d_real_best.pt", map_location=DEVICE)
 unet_model.load_state_dict(unet_checkpoint["model_state_dict"])
 unet_model.eval()
 
 # ---- Load mimic classifier (Stage 2 filter) ----
 mimic_model = SimpleCNN3D().to(DEVICE)
-mimic_model.load_state_dict(torch.load(MODELS_DIR / "mimic_classifier_best.pt", map_location=DEVICE))
+mimic_model.load_state_dict(torch.load(MODELS_DIR / "mimic_classifier_unet_matched_best.pt", map_location=DEVICE))
 mimic_model.eval()
 
 print("U-Net (candidate generator) and mimic classifier (filter) loaded.\n")
