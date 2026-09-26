@@ -17,6 +17,7 @@ from scipy import ndimage
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.append(str(Path(__file__).resolve().parents[1] / "preprocessing"))
+sys.path.append(str(Path(__file__).resolve().parents[1] / "candidate_detector"))
 from config import PROCESSED_DATA_DIR, SPLITS_DIR
 from src.models.unet3d_model import UNet3D
 from model import SimpleCNN3D  # mimic classifier architecture
