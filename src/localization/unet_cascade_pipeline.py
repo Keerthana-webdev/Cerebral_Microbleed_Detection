@@ -34,7 +34,7 @@ NMS_DISTANCE = 15
 
 # ---- Load U-Net (candidate generator) ----
 unet_model = UNet3D(in_channels=1, out_channels=1).to(DEVICE)
-unet_checkpoint = torch.load(MODELS_DIR / "unet3d" / "unet3d_real_best.pt", map_location=DEVICE)
+mimic_model.load_state_dict(torch.load(MODELS_DIR / "mimic_classifier_unet_matched_best.pt", map_location=DEVICE))
 unet_model.load_state_dict(unet_checkpoint["model_state_dict"])
 unet_model.eval()
 
@@ -217,7 +217,8 @@ def main():
     print(f"\n=== Comparison (validation, matched-style points) ===")
     print(f"U-Net alone (from earlier test):     Sensitivity 41.38%, FP/scan 127.18")
     print(f"CNN v3 alone (validation):            Sensitivity 23.8%, FP/subject 19.82")
-    print(f"U-Net cascade (this experiment):      Sensitivity {sensitivity*100:.1f}%, FP/subject {fp_per_subject:.2f}")
+    print(f"U-Net cascade + ORIGINAL mimic filter: Sensitivity 66.7%, FP/subject 112.27")
+    print(f"U-Net cascade + MATCHED mimic filter:  Sensitivity {sensitivity*100:.1f}%, FP/subject {fp_per_subject:.2f}")
 
 
 if __name__ == "__main__":
