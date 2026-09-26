@@ -97,8 +97,7 @@ for _, row in test_metadata.iterrows():
     p_densenet = get_densenet_prob(tensor)
 
     # Soft voting: simple average of the three probabilities
-    ensemble_prob = (p_cnn + p_resnet + p_densenet) / 3.0
-    predicted = 1 if ensemble_prob > 0.5 else 0
+    
 
     results.append({
         "subject": row["subject"], "true_label": true_label,
