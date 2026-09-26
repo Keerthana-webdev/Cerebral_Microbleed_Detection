@@ -97,7 +97,15 @@ for _, row in test_metadata.iterrows():
     p_densenet = get_densenet_prob(tensor)
 
     # Soft voting: simple average of the three probabilities
-    
+    # Weighted voting: weight each model by its individual F1 score,
+    # giving the strongest model (CNN v3) more influence than naive averaging
+    W_CNN, W_RESNET, W_DENSENET = 93.60, 89.92, 88.71
+    total_weight = W_CNN + W_RESNET + W_DENSENET
+
+    ensemble_prob = (
+        (p_cnn * W_CNN) + (p_resnet * W_RESNET) + (p_densenet * W_DENSENET)
+    ) / total_weight
+    predicted = 1 if ensemble_prob > 0.5 else 0
 
     results.append({
         "subject": row["subject"], "true_label": true_label,
