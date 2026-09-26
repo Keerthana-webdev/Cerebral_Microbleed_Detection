@@ -127,7 +127,7 @@ accuracy = (tp + tn) / (tp + tn + fp + fn + 1e-8)
 f1 = 2 * precision * recall / (precision + recall + 1e-8)
 
 print("=" * 70)
-
+print("WEIGHTED ENSEMBLE (F1-weighted: CNN v3 + 3D ResNet + 3D DenseNet) — PATCH-LEVEL RESULTS")
 print("=" * 70)
 print(f"Confusion Matrix:")
 print(f"                  Predicted CMB   Predicted Normal")
